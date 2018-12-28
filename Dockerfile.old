@@ -1,0 +1,37 @@
+FROM jupyter/datascience-notebook:latest
+MAINTAINER CSEL Ops <admin@cs.colorado.edu>
+
+COPY    ./cling.bz2 /tmp
+
+USER	0
+RUN     cd /opt && \
+	chmod ugo+wx /opt && \
+        tar jxvf /tmp/cling.bz2 && \
+	mv cling_2018-04-23_ubuntu16 cling && \
+	echo 'PATH="$PATH:/opt/cling/bin"' >> /etc/environment && \
+	rm -f /tmp/cling.bz2 && \
+	chmod -R go-w /opt
+
+RUN	cd /opt/cling/share/cling/Jupyter/kernel && \
+	pip install -e . && \
+	jupyter-kernelspec install --user cling-cpp11 
+
+RUN	sudo apt-get update && \
+	sudo apt-get install apt-transport-https && \
+	echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list && \
+	sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 && \
+	sudo apt-get update && \
+	sudo apt-get install -y sbt default-jdk
+
+RUN	cd /opt && \
+	git clone https://github.com/jupyter-scala/jupyter-scala.git && \
+	cd /opt/jupyter-scala && \
+	bash -x jupyter-scala
+
+RUN pip install bash_kernel && \
+    python -m bash_kernel.install && \
+    $CONDA_DIR/bin/python $CONDA_DIR/bin/ipython kernelspec install-self
+
+USER	$NB_UID
+
+
