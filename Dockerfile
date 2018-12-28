@@ -1,4 +1,5 @@
-FROM gcr.io/csel-stage-161517/datascience-notebook
+#FROM gcr.io/csel-stage-161517/datascience-notebook
+FROM gcr.io/emerald-agility-749/datascience-notebook
 MAINTAINER CSEL Ops <admin@cs.colorado.edu>
 
 #COPY    ./cling.bz2 /tmp
