@@ -59,10 +59,10 @@ RUN mkdir /home/$NB_USER/work && \
     GROUP=$NB_GID fix-permissions /home/$NB_USER
 
 # Install conda as jovyan and check the md5 sum provided on the download site
-ENV MINICONDA_VERSION 4.5.4
+ENV MINICONDA_VERSION 4.5.11
 RUN cd /tmp && \
     wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
-    echo "a946ea1d0c4a642ddf0c3a26a18bb16d *Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
+    echo "e1045ee415162f944b6aebfe560b8fee *Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh" | md5sum -c - && \
     /bin/bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh && \
     $CONDA_DIR/bin/conda config --system --prepend channels conda-forge && \
@@ -82,24 +82,19 @@ RUN conda install --quiet --yes 'tini=0.18.0' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
-# Install Jupyter Notebook, Lab, and Hub
-# Generate a notebook server config
-# Cleanup temporary files
-# Correct permissions
-# Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 RUN conda install --quiet --yes \
-    'notebook=5.6.*' \
-    'jupyterhub=0.8.*' \
-    'jupyterlab=0.32.*' && \
+    'notebook=5.7.2' \
+    'jupyterhub=0.9.4' \
+    'jupyterlab=0.35.4' && \
     conda clean -tipsy && \
-    jupyter labextension install @jupyterlab/hub-extension@^0.8.1 && \
+    jupyter labextension install @jupyterlab/hub-extension@^0.12.0 && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache/yarn && \
-    GROUP=$NB_GID fix-permissions $CONDA_DIR && \
-    GROUP=$NB_GID fix-permissions /home/$NB_USER
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 USER root
 
@@ -191,7 +186,7 @@ RUN conda install --quiet --yes \
     'matplotlib=2.2*' \
     'scipy=1.1*' \
     'seaborn=0.9*' \
-    'scikit-learn=0.19*' \
+    'scikit-learn=0.20*' \
     'scikit-image=0.14*' \
     'sympy=1.1*' \
     'cython=0.28*' \
@@ -200,7 +195,7 @@ RUN conda install --quiet --yes \
     'cloudpickle=0.5*' \
     'dill=0.2*' \
     'numba=0.38*' \
-    'bokeh=0.12*' \
+    'bokeh=0.13*' \
     'sqlalchemy=1.2*' \
     'hdf5=1.10*' \
     'h5py=2.7*' \
@@ -213,8 +208,10 @@ RUN conda install --quiet --yes \
     # Activate ipywidgets extension in the environment that runs the notebook server
     jupyter nbextension enable --py widgetsnbextension --sys-prefix && \
     # Also activate ipywidgets extension for JupyterLab
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.35 && \
-    jupyter labextension install jupyterlab_bokeh@^0.5.0 && \
+    # Check this URL for most recent compatibilities
+    # https://github.com/jupyter-widgets/ipywidgets/tree/master/packages/jupyterlab-manager
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager@^0.38.1 && \
+    jupyter labextension install jupyterlab_bokeh@0.6.3 && \
     npm cache clean --force && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
     rm -rf /home/$NB_USER/.cache/yarn && \
@@ -229,8 +226,8 @@ RUN cd /tmp && \
     jupyter nbextension install facets-dist/ --sys-prefix && \
     cd && \
     rm -rf /tmp/facets && \
-    GROUP=$NB_GID   fix-permissions $CONDA_DIR && \
-    GROUP=$NB_GID   fix-permissions /home/$NB_USER
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Import matplotlib the first time to build the font cache.
 ENV XDG_CACHE_HOME /home/$NB_USER/.cache/
@@ -251,13 +248,14 @@ USER root
 
 # Julia dependencies
 # install Julia packages in /opt/julia instead of $HOME
+ENV JULIA_DEPOT_PATH=/opt/julia
 ENV JULIA_PKGDIR=/opt/julia
-ENV JULIA_VERSION=0.6.2
+ENV JULIA_VERSION=1.0.0
 
 RUN mkdir /opt/julia-${JULIA_VERSION} && \
     cd /tmp && \
     wget -q https://julialang-s3.julialang.org/bin/linux/x64/`echo ${JULIA_VERSION} | cut -d. -f 1,2`/julia-${JULIA_VERSION}-linux-x86_64.tar.gz && \
-    echo "dc6ec0b13551ce78083a5849268b20684421d46a7ec46b17ec1fab88a5078580 *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
+    echo "bea4570d7358016d8ed29d2c15787dbefaea3e746c570763e7ad6040f17831f3 *julia-${JULIA_VERSION}-linux-x86_64.tar.gz" | sha256sum -c - && \
     tar xzf julia-${JULIA_VERSION}-linux-x86_64.tar.gz -C /opt/julia-${JULIA_VERSION} --strip-components=1 && \
     rm /tmp/julia-${JULIA_VERSION}-linux-x86_64.tar.gz
 RUN ln -fs /opt/julia-*/bin/julia /usr/local/bin/julia
@@ -268,7 +266,7 @@ RUN mkdir /etc/julia && \
     # Create JULIA_PKGDIR \
     mkdir $JULIA_PKGDIR && \
     chown $NB_USER $JULIA_PKGDIR && \
-    GROUP=$NB_GID   fix-permissions $JULIA_PKGDIR
+    fix-permissions $JULIA_PKGDIR
 
 USER $NB_UID
 
@@ -295,8 +293,8 @@ RUN conda install --quiet --yes \
     'r-htmlwidgets=1.0*' \
     'r-hexbin=1.27*' && \
     conda clean -tipsy && \
-    GROUP=$NB_GID   fix-permissions $CONDA_DIR && \
-    GROUP=$NB_GID   fix-permissions /home/$NB_USER
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Add Julia packages. Only add HDF5 if this is not a test-only build since
 # it takes roughly half the entire build time of all of the images on Travis
@@ -305,19 +303,18 @@ RUN conda install --quiet --yes \
 # Install IJulia as jovyan and then move the kernelspec out
 # to the system share location. Avoids problems with runtime UID change not
 # taking effect properly on the .local folder in the jovyan home dir.
-RUN julia -e 'Pkg.init()' && \
-    julia -e 'Pkg.update()' && \
-    (test $TEST_ONLY_BUILD || julia -e 'Pkg.add("HDF5")') && \
-    julia -e 'Pkg.add("Gadfly")' && \
-    julia -e 'Pkg.add("RDatasets")' && \
-    julia -e 'Pkg.add("IJulia")' && \
+RUN julia -e 'import Pkg; Pkg.update()' && \
+    (test $TEST_ONLY_BUILD || julia -e 'import Pkg; Pkg.add("HDF5")') && \
+    julia -e 'import Pkg; Pkg.add("Gadfly")' && \
+    julia -e 'import Pkg; Pkg.add("RDatasets")' && \
+    julia -e 'import Pkg; Pkg.add("IJulia")' && \
     # Precompile Julia packages \
     julia -e 'using IJulia' && \
     # move kernelspec out of home \
     mv $HOME/.local/share/jupyter/kernels/julia* $CONDA_DIR/share/jupyter/kernels/ && \
     chmod -R go+rx $CONDA_DIR/share/jupyter && \
     rm -rf $HOME/.local && \
-    GROUP=$NB_GID   fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
+    fix-permissions $JULIA_PKGDIR $CONDA_DIR/share/jupyter
 
 #############################################################################
 ## CU specific
@@ -355,12 +352,18 @@ ENV	PATH=/opt/cling/bin:$PATH
 #	DEBIAN_FRONTEND=noninteractive apt-get install -y sbt scala 
 
 # install jupyter-scala
-RUN 	curl -L -o coursier https://git.io/vgvpD && \
-    	chmod +x coursier && \
-     	mv coursier /usr/bin/ && \
-	git clone https://github.com/jupyter-scala/jupyter-scala.git && \
-        jupyter-scala/jupyter-scala --jupyter-path /opt/conda/share/jupyter && \
-        rm -rf jupyter-scala
+RUN	curl -L -o /usr/local/bin/coursier https://git.io/coursier && \
+        chmod +x /usr/local/bin/coursier && \
+        SCALA_VERSION=2.11.12 ALMOND_VERSION=0.2.1 && \
+	/usr/local/bin/coursier bootstrap \
+	  	   -r jitpack \
+		   -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
+		   sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
+		   --sources --default=true \
+		   -o /tmp/almond-scala-2.11 && \
+          /tmp/almond-scala-2.11 --install --jupyter-path /opt/conda/share/jupyter/kernels \
+	  			 --id scala211 --display-name "Scala (2.11)" && \
+	  rm -f /tmp/almond-scala-2.11
 
 #RUN	cd /opt/cling/share/cling/Jupyter/kernel && \
 #	$CONDA_DIR/bin/pip install -e . && \
@@ -386,7 +389,8 @@ RUN 	pip install jupyterlab_latex && \
 # 	yarn run build && \
 # 	jupyter labextension link .
 
-RUN    conda install --no-update-deps bokeh plotly vega3 qgrid pygraphviz
+RUN    conda install --no-update-deps -c conda-forge \
+          bokeh plotly vega3 qgrid pygraphviz ipython-sql
 
 # install beakerx
 #RUN conda update -n base conda && \
@@ -409,13 +413,14 @@ RUN    conda install --no-update-deps bokeh plotly vega3 qgrid pygraphviz
 #RUN	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
 #	jupyter labextension install @jupyterlab/hub-extension
 	
-RUN	pip install ipython-sql
-
-RUN	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-	cd /opt && \
-	git clone https://github.com/dirkcgrunwald/mobilechelonian.git && \
-	cd mobilechelonian && \
-	python setup.py install 
+#
+# Turtle graphics - not usable yet
+#
+#RUN	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+#	cd /opt && \
+#	git clone https://github.com/dirkcgrunwald/mobilechelonian.git && \
+#	cd mobilechelonian && \
+#	python setup.py install 
 
 #RUN	jupyter lab build
 
