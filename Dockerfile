@@ -351,19 +351,20 @@ ENV	PATH=/opt/cling/bin:$PATH
 #	apt-get update && \
 #	DEBIAN_FRONTEND=noninteractive apt-get install -y sbt scala 
 
-# install jupyter-scala
-RUN	curl -L -o /usr/local/bin/coursier https://git.io/coursier && \
-        chmod +x /usr/local/bin/coursier && \
-        SCALA_VERSION=2.11.12 ALMOND_VERSION=0.2.1 && \
-	/usr/local/bin/coursier bootstrap \
-	  	   -r jitpack \
-		   -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
-		   sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
-		   --sources --default=true \
-		   -o /tmp/almond-scala-2.11 && \
-          /tmp/almond-scala-2.11 --install --jupyter-path /opt/conda/share/jupyter/kernels \
-	  			 --id scala211 --display-name "Scala (2.11)" && \
-	  rm -f /tmp/almond-scala-2.11
+##-## # install jupyter-scala
+##-## RUN	curl -L -o /usr/local/bin/coursier https://git.io/coursier && \
+##-##         chmod +x /usr/local/bin/coursier && \
+##-##         SCALA_VERSION=2.11.12 ALMOND_VERSION=0.2.1 && \
+##-## 	/usr/local/bin/coursier bootstrap \
+##-## 	  	   -r jitpack \
+##-## 		   -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
+##-## 		   sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
+##-## 		   --sources --default=true \
+##-## 		   -o /tmp/almond-scala-2.11 && \
+##-##           /tmp/almond-scala-2.11 --install --jupyter-path /opt/conda/share/jupyter/kernels \
+##-## 	  			 --id scala211 --display-name "Scala (2.11)" && \
+##-## 	  rm -f /tmp/almond-scala-2.11
+##-## 
 
 #RUN	cd /opt/cling/share/cling/Jupyter/kernel && \
 #	$CONDA_DIR/bin/pip install -e . && \
@@ -390,7 +391,8 @@ RUN 	pip install jupyterlab_latex && \
 # 	jupyter labextension link .
 
 RUN    conda install --no-update-deps -c conda-forge \
-          bokeh plotly vega3 qgrid pygraphviz ipython-sql
+          bokeh plotly vega3 qgrid pygraphviz ipython-sql beakerx && \
+	  jupyter labextension install beakerx-jupyterlab
 
 # install beakerx
 #RUN conda update -n base conda && \
