@@ -373,8 +373,6 @@ ENV	PATH=/opt/cling/bin:$PATH
 RUN	$CONDA_DIR/bin/pip install bash_kernel && \
 	$CONDA_DIR/bin/python -m bash_kernel.install
 
-#RUN	jupyter labextension install jupyterlab_voyager
-
 RUN 	pip install jupyterlab_latex && \
 	jupyter serverextension enable --sys-prefix jupyterlab_latex && \
 	jupyter labextension install @mflevine/jupyterlab_html && \
@@ -391,29 +389,9 @@ RUN 	pip install jupyterlab_latex && \
 # 	jupyter labextension link .
 
 RUN    conda install --no-update-deps -c conda-forge \
-          bokeh plotly vega3 qgrid pygraphviz ipython-sql beakerx && \
+          bokeh plotly vega3 qgrid pygraphviz ipython-sql beakerx mysqlclient && \
 	  jupyter labextension install beakerx-jupyterlab
 
-# install beakerx
-#RUN conda update -n base conda && \
-#    conda install beakerx bokeh plotly vega3 qgrid && \
-#    conda update -n base --all -y
-
-#RUN beakerx install 
-#RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
-#RUN jupyter labextension install beakerx-jupyterlab 
-#RUN jupyter labextension install @jupyterlab/geojson-extension
-
-## RUN	jupyter labextension install @jupyterlab/plotly-extension && \
-## 	jupyter labextension install @jupyterlab/vega3-extension && \
-## 	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-## 	jupyter labextension install @jupyterlab/hub-extension && \
-## 	jupyter labextension install @jupyterlab/github && \
-## 	jupyter labextension install jupyterlab_bokeh && \
-## 	jupyter labextension install qgrid
-
-#RUN	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-#	jupyter labextension install @jupyterlab/hub-extension
 	
 #
 # Turtle graphics - not usable yet
@@ -424,18 +402,8 @@ RUN    conda install --no-update-deps -c conda-forge \
 #	cd mobilechelonian && \
 #	python setup.py install 
 
-#RUN	jupyter lab build
-
-#RUN	add-apt-repository "deb https://cli-assets.heroku.com/branches/stable/apt ./" && \
-#	curl -L https://cli-assets.heroku.com/apt/release.key | apt-key add - && \
-#	apt-get update && apt-get install heroku
-
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
 RUN rm -rf /home/jovyan/.cache 
-
-#&& \
-#    /usr/local/bin/fix-permissions /opt && \
-#    /usr/local/bin/fix-permissions /home/jovyan
 
 USER	$NB_UID
