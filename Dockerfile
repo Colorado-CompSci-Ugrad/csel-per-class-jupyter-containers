@@ -389,8 +389,12 @@ RUN 	pip install jupyterlab_latex && \
 # 	jupyter labextension link .
 
 RUN    conda install --no-update-deps -c conda-forge \
-          bokeh plotly vega3 qgrid pygraphviz ipython-sql beakerx mysqlclient && \
-	  jupyter labextension install beakerx-jupyterlab
+       bokeh plotly vega3 qgrid pygraphviz \
+	  	ipython-sql beakerx mysqlclient && \
+       jupyter labextension install beakerx-jupyterlab
+
+RUN    conda install -c conda-forge -c quantstack  xeus-cling
+
 
 	
 #
