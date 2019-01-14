@@ -395,8 +395,6 @@ RUN    conda install --no-update-deps -c conda-forge \
 
 RUN    conda install -c conda-forge -c quantstack  xeus-cling
 
-
-	
 #
 # Turtle graphics - not usable yet
 #

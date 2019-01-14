@@ -1,8 +1,13 @@
 GCE_PROJECT_NAME=$(shell gcloud config get-value project)
+##
+## You can use the preceding definition if you're pushing to a dev
+## cluster, but normally you should be pushing to the default
+##
+GCE_PROJECT_NAME=emerald-agility-749
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
 NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook
-NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.34
+NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.35
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 build:
