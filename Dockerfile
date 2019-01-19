@@ -7,6 +7,9 @@ MAINTAINER CSEL Ops <admin@cs.colorado.edu>
 
 
 LABEL maintainer="Jupyter Project <jupyter@googlegroups.com>"
+ARG NB_USER="jovyan"
+ARG NB_UID="1000"
+ARG NB_GID="100"
 
 USER root
 
@@ -49,14 +52,14 @@ RUN groupadd wheel -g 11 && \
     mkdir -p $CONDA_DIR && \
     chown $NB_USER:$NB_GID $CONDA_DIR && \
     chmod g+w /etc/passwd && \
-    GROUP=$NB_GID fix-permissions $HOME && \
-    GROUP=$NB_GID fix-permissions $CONDA_DIR
+    fix-permissions $HOME && \
+    fix-permissions $CONDA_DIR
 
 USER $NB_UID
 
 # Setup work directory for backward-compatibility
 RUN mkdir /home/$NB_USER/work && \
-    GROUP=$NB_GID fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER
 
 # Install conda as jovyan and check the md5 sum provided on the download site
 ENV MINICONDA_VERSION 4.5.11
@@ -72,8 +75,8 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda clean -tipsy && \
     rm -rf /home/$NB_USER/.cache/yarn && \
-    GROUP=$NB_GID fix-permissions $CONDA_DIR && \
-    GROUP=$NB_GID fix-permissions /home/$NB_USER
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER
 
 # Install Tini
 RUN conda install --quiet --yes 'tini=0.18.0' && \
@@ -82,6 +85,11 @@ RUN conda install --quiet --yes 'tini=0.18.0' && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
 
+# Install Jupyter Notebook, Lab, and Hub
+# Generate a notebook server config
+# Cleanup temporary files
+# Correct permissions
+# Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
 RUN conda install --quiet --yes \
     'notebook=5.7.2' \
@@ -110,7 +118,7 @@ COPY start.sh /usr/local/bin/
 COPY start-notebook.sh /usr/local/bin/
 COPY start-singleuser.sh /usr/local/bin/
 COPY jupyter_notebook_config.py /etc/jupyter/
-RUN GROUP=$NB_GID fix-permissions /etc/jupyter/
+RUN fix-permissions /etc/jupyter/
 
 # Switch back to jovyan to avoid accidental container runs as root
 USER $NB_UID
@@ -173,6 +181,11 @@ USER $NB_UID
 
 USER root
 
+# ffmpeg for matplotlib anim
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
+
 USER $NB_UID
 
 # Install Python 3 packages
@@ -180,7 +193,7 @@ USER $NB_UID
 # use notebook-friendly backends in these images
 RUN conda install --quiet --yes \
     'conda-forge::blas=*=openblas' \
-    'ipywidgets=7.2*' \
+    'ipywidgets=7.4*' \
     'pandas=0.23*' \
     'numexpr=2.6*' \
     'matplotlib=2.2*' \
@@ -272,25 +285,25 @@ USER $NB_UID
 
 # R packages including IRKernel which gets installed globally.
 RUN conda install --quiet --yes \
-    'rpy2=2.8*' \
-    'r-base=3.4.1' \
+    'rpy2=2.9*' \
+    'r-base=3.5.1' \
     'r-irkernel=0.8*' \
     'r-plyr=1.8*' \
     'r-devtools=1.13*' \
-    'r-tidyverse=1.1*' \
-    'r-shiny=1.0*' \
-    'r-rmarkdown=1.8*' \
+    'r-tidyverse=1.2*' \
+    'r-shiny=1.2*' \
+    'r-rmarkdown=1.11*' \
     'r-forecast=8.2*' \
-    'r-rsqlite=2.0*' \
+    'r-rsqlite=2.1*' \
     'r-reshape2=1.4*' \
-    'r-nycflights13=0.2*' \
+    'r-nycflights13=1.0*' \
     'r-caret=6.0*' \
     'r-rcurl=1.95*' \
     'r-crayon=1.3*' \
     'r-randomforest=4.6*' \
     'r-htmltools=0.3*' \
-    'r-sparklyr=0.7*' \
-    'r-htmlwidgets=1.0*' \
+    'r-sparklyr=0.9*' \
+    'r-htmlwidgets=1.2*' \
     'r-hexbin=1.27*' && \
     conda clean -tipsy && \
     fix-permissions $CONDA_DIR && \
@@ -322,54 +335,6 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 
 USER	root
 
-ENV	PATH=/opt/cling/bin:$PATH
-
-## RUN	apt-get update && \
-## 	apt-get -y install manpages && \
-## 	apt-get -y --no-install-recommends install openssh-client gdb \
-## 		build-essential libc6-dev-i386 man valgrind gcc-multilib g++-multilib \
-## 		software-properties-common python3-software-properties curl gnupg \
-## 		mysql-client apt-transport-https psmisc graphviz vim && \
-## 	echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections && \
-## 	add-apt-repository ppa:linuxuprising/java && \
-## 	add-apt-repository ppa:webupd8team/java && \
-## 	apt update && \
-## 	apt install oracle-java8-installer -y && \
-## 	apt-get autoremove && \
-## 	apt-get autoclean
-## 
-##
-## for jupyterlab-monaco when we can use it
-##
-#RUN	cd /tmp && \
-#	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-#	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-#	apt-get update && apt-get install -y yarn
-
-#RUN	echo "deb https://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list #&& \
-## 	apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823 && \
-#	apt-get update && \
-#	DEBIAN_FRONTEND=noninteractive apt-get install -y sbt scala 
-
-##-## # install jupyter-scala
-##-## RUN	curl -L -o /usr/local/bin/coursier https://git.io/coursier && \
-##-##         chmod +x /usr/local/bin/coursier && \
-##-##         SCALA_VERSION=2.11.12 ALMOND_VERSION=0.2.1 && \
-##-## 	/usr/local/bin/coursier bootstrap \
-##-## 	  	   -r jitpack \
-##-## 		   -i user -I user:sh.almond:scala-kernel-api_$SCALA_VERSION:$ALMOND_VERSION \
-##-## 		   sh.almond:scala-kernel_$SCALA_VERSION:$ALMOND_VERSION \
-##-## 		   --sources --default=true \
-##-## 		   -o /tmp/almond-scala-2.11 && \
-##-##           /tmp/almond-scala-2.11 --install --jupyter-path /opt/conda/share/jupyter/kernels \
-##-## 	  			 --id scala211 --display-name "Scala (2.11)" && \
-##-## 	  rm -f /tmp/almond-scala-2.11
-##-## 
-
-#RUN	cd /opt/cling/share/cling/Jupyter/kernel && \
-#	$CONDA_DIR/bin/pip install -e . && \
-#	$CONDA_DIR/bin/jupyter-kernelspec install cling-cpp11 
-
 RUN	$CONDA_DIR/bin/pip install bash_kernel && \
 	$CONDA_DIR/bin/python -m bash_kernel.install
 
@@ -379,21 +344,19 @@ RUN 	pip install jupyterlab_latex && \
 	jupyter labextension install @jupyterlab/latex && \
 	jupyter labextension install jupyterlab-drawio
 
-#ENV	NODE_OPTIONS=--max-old-space-size=4096
-
-# RUN	cd /opt && \
-# 	git clone https://github.com/jupyterlab/jupyterlab-monaco && \
-# 	cd jupyterlab-monaco && \
-# 	yarn install && \
-# 	yarn run build && \
-# 	jupyter labextension link .
-
 RUN    conda install --no-update-deps -c conda-forge \
        bokeh plotly vega3 qgrid pygraphviz \
 	  	ipython-sql beakerx mysqlclient && \
        jupyter labextension install beakerx-jupyterlab
 
 RUN    conda install -c conda-forge -c quantstack  xeus-cling
+
+RUN    pip install nbgitpuller &&\
+       jupyter serverextension enable --sys-prefix nbgitpuller
+
+RUN    jupyter labextension install @jupyterlab/git && \
+       pip install -U jupyterlab-git &&\
+       jupyter serverextension enable --py --sys-prefix jupyterlab_git
 
 #
 # Turtle graphics - not usable yet
@@ -406,6 +369,8 @@ RUN    conda install -c conda-forge -c quantstack  xeus-cling
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
-RUN rm -rf /home/jovyan/.cache 
+COPY	before-notebook.d /usr/local/bin/before-notebook.d
+RUN	rm -rf /home/jovyan/.cache  && \
+	rm -rf /usr/local/bin/fix-permissions
 
 USER	$NB_UID

@@ -7,7 +7,7 @@ GCE_PROJECT_NAME=emerald-agility-749
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
 NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook
-NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.35
+NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.40
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 build:
@@ -22,16 +22,3 @@ tag:
 push:
 	docker push $(NOTEBOOK_VERSION)
 	docker push $(NOTEBOOK_LATEST)
-
-BEAKER_IMAGE_LOCAL = beakerx
-BEAKER_IMAGE = $(DOCKER_REPO)/beakerx
-BEAKER_VERSION = $(BEAKER_IMAGE):v1.0.11
-BEAKER_LATEST = $(BEAKER_IMAGE):latest
-
-tag-beaker:
-	docker tag $(BEAKER_IMAGE_LOCAL) $(BEAKER_VERSION)
-	docker tag $(BEAKER_IMAGE_LOCAL) $(BEAKER_LATEST)
-
-push-beaker:
-	docker push $(BEAKER_VERSION)
-	docker push $(BEAKER_LATEST)
