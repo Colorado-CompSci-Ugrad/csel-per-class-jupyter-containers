@@ -370,6 +370,8 @@ RUN    jupyter labextension install @jupyterlab/git && \
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
+COPY	start-notebook.d /usr/local/bin/start-notebook.d
+
 RUN	rm -rf /home/jovyan/.cache  && \
 	rm -rf /usr/local/bin/fix-permissions
 
