@@ -150,6 +150,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     texlive-latex-extra \
     texlive-xetex \
     unzip \
+    zip \
     nano \
     openssh-client gdb \
 		build-essential libc6-dev-i386 man valgrind gcc-multilib g++-multilib \
