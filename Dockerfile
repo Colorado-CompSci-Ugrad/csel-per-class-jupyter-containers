@@ -333,7 +333,7 @@ RUN julia -e 'import Pkg; Pkg.update()' && \
 ## CU specific
 #############################################################################
 
-USER	root
+USER $NB_UID
 
 RUN	$CONDA_DIR/bin/pip install bash_kernel && \
 	$CONDA_DIR/bin/python -m bash_kernel.install
@@ -367,12 +367,16 @@ RUN    jupyter labextension install @jupyterlab/git && \
 #	cd mobilechelonian && \
 #	python setup.py install 
 
+USER root
+
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
-RUN	rm -rf /home/jovyan/.cache  && \
+RUN	rm -rf /home/jovyan  && \
+	mkdir /home/jovyan && \
+	chown $NB_UID:$NB_GID /home/jovyan && \
 	rm -rf /usr/local/bin/fix-permissions
 
 USER	$NB_UID
