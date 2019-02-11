@@ -350,7 +350,7 @@ RUN    conda install --no-update-deps -c conda-forge \
 	  	ipython-sql beakerx mysqlclient && \
        jupyter labextension install beakerx-jupyterlab
 
-RUN    conda install -c conda-forge -c quantstack  xeus-cling
+RUN    conda install -c conda-forge xeus-cling
 
 RUN    pip install nbgitpuller &&\
        jupyter serverextension enable --sys-prefix nbgitpuller
