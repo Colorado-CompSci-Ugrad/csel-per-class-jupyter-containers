@@ -152,6 +152,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     unzip \
     zip \
     nano \
+    libgtest-dev cmake-curses-gui \
     openssh-client gdb \
 		build-essential libc6-dev-i386 man valgrind gcc-multilib g++-multilib \
 		software-properties-common python3-software-properties curl gnupg \
