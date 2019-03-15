@@ -153,6 +153,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     zip \
     nano \
     libgtest-dev cmake-curses-gui \
+    net-tools \
     openssh-client gdb \
 		build-essential libc6-dev-i386 man valgrind gcc-multilib g++-multilib \
 		software-properties-common python3-software-properties curl gnupg \
@@ -346,9 +347,13 @@ RUN 	pip install jupyterlab_latex && \
 	jupyter labextension install @jupyterlab/latex && \
 	jupyter labextension install jupyterlab-drawio
 
+#
+# See https://github.com/jupyter/notebook/issues/4311 for specific issue with tornado
+#
 RUN    conda install --no-update-deps -c conda-forge \
+       'tornado<6' \
        bokeh plotly vega3 qgrid pygraphviz \
-	  	ipython-sql beakerx mysqlclient && \
+	  	ipython-sql beakerx=1.3.0 mysqlclient && \
        jupyter labextension install beakerx-jupyterlab
 
 RUN    conda install -c conda-forge xeus-cling
@@ -357,7 +362,7 @@ RUN    pip install nbgitpuller &&\
        jupyter serverextension enable --sys-prefix nbgitpuller
 
 RUN    jupyter labextension install @jupyterlab/git && \
-       pip install -U jupyterlab-git &&\
+       pip install -U jupyterlab-git  &&\
        jupyter serverextension enable --py --sys-prefix jupyterlab_git
 
 #
@@ -372,6 +377,26 @@ RUN    jupyter labextension install @jupyterlab/git && \
 USER root
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
+
+RUN	conda install nbserverproxy python-language-server flake8 autopep8 && \
+	jupyter serverextension enable --py --sys-prefix nbserverproxy && \
+	jupyter labextension install jupyterlab-server-proxy && \
+	pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b1
+
+	
+RUN	cd /opt && \
+	mkdir /opt/code-server && \
+	cd /opt/code-server && \
+	wget -qO- https://github.com/codercom/code-server/releases/download/1.32.0-275/code-server-1.32.0-275-linux-x64.tar.gz | tar zxvf - --strip-components=1
+
+ENV	PATH=/opt/code-server:$PATH
+
+#
+# Declutter
+#
+RUN	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y clojure groovy kotlin xeus-cling-cpp11
+
+ENV	PATH=/opt/theia/node_modules/.bin:$PATH
 
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
