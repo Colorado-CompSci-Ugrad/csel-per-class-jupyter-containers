@@ -387,14 +387,14 @@ RUN	conda install nbserverproxy python-language-server flake8 autopep8 && \
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
 	cd /opt/code-server && \
-	wget -qO- https://github.com/codercom/code-server/releases/download/1.32.0-275/code-server-1.32.0-275-linux-x64.tar.gz | tar zxvf - --strip-components=1
+	wget -qO- https://github.com/codercom/code-server/releases/download/1.32.0-310/code-server-1.32.0-310-linux-x64.tar.gz | tar zxvf - --strip-components=1
 
 ENV	PATH=/opt/code-server:$PATH
 
 #
 # Declutter
 #
-RUN	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y clojure groovy kotlin xeus-cling-cpp11
+RUN	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y clojure groovy kotlin
 
 ENV	PATH=/opt/theia/node_modules/.bin:$PATH
 
