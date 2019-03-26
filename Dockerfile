@@ -391,6 +391,15 @@ RUN	cd /opt && \
 
 ENV	PATH=/opt/code-server:$PATH
 
+##
+## Geopython
+##
+RUN	conda install -c conda-forge \
+	conda-forge::gdal conda-forge:libgdal \
+	conda-forge::lxml conda-forge::geopandas conda-forge::geoplot \
+	conda-forge::folium conda-forge::pysal conda-forge::rasterio conda-forge::poppler && \
+	pip install contextily libpysal mgwr mapclassify esda
+
 #
 # Declutter
 #
