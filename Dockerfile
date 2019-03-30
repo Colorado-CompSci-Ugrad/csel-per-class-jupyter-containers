@@ -392,13 +392,18 @@ RUN	cd /opt && \
 ENV	PATH=/opt/code-server:$PATH
 
 ##
-## Geopython
+## Geopython, XML
 ##
 RUN	conda install -c conda-forge \
 	conda-forge::gdal conda-forge:libgdal \
 	conda-forge::lxml conda-forge::geopandas conda-forge::geoplot \
-	conda-forge::folium conda-forge::pysal conda-forge::rasterio conda-forge::poppler && \
-	pip install contextily libpysal mgwr mapclassify esda
+	conda-forge::folium conda-forge::pysal conda-forge::rasterio conda-forge::poppler \
+	conda-forge::psycopg2 \
+	&& \
+	apt-get update && \
+	apt-get install -yq --no-install-recommends xqilla libxqilla-dev && \
+	rm -rf /var/lib/apt/lists/* && \
+	pip install contextily libpysal mgwr mapclassify esda python-simplexquery
 
 #
 # Declutter
