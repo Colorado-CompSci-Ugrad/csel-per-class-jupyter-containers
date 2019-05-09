@@ -403,7 +403,7 @@ RUN	conda install -c conda-forge \
 	apt-get update && \
 	apt-get install -yq --no-install-recommends xqilla libxqilla-dev && \
 	rm -rf /var/lib/apt/lists/* && \
-	pip install contextily libpysal mgwr mapclassify esda python-simplexquery
+	pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
 
 #
 # Declutter
