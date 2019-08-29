@@ -1,0 +1,6 @@
+2019-08-23  Dirk Grunwald  <grunwald@dirk-macpro18.local>
+
+	* https://github.com/jupyterhub/the-littlest-jupyterhub/issues/289
+	We appearing to be hit by this error. This was fixed(?) by upgrading
+	from 0.8.2 to 0.9-dcde99a
+
