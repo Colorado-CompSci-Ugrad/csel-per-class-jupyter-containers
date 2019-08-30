@@ -421,8 +421,12 @@ RUN	conda install -c conda-forge \
 	rm -rf /var/lib/apt/lists/* && \
 	pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
 
+##
+## Perf, MPICH
+## You need to enable CAP_SYS_ADMIN to use perf in Docker
+## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
 RUN	apt-get update && \
-	apt-get install -yq --no-install-recommends linux-tools-common mpich && \
+	apt-get install -yq --no-install-recommends linux-tools-common linux-tools-`uname -r` mpich hwloc && \
 	rm -rf /var/lib/apt/lists/*
 
 
