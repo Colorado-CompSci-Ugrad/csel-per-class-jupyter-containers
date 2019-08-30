@@ -421,6 +421,11 @@ RUN	conda install -c conda-forge \
 	rm -rf /var/lib/apt/lists/* && \
 	pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
 
+RUN	apt-get update && \
+	apt-get install -yq --no-install-recommends linux-tools-common mpich && \
+	rm -rf /var/lib/apt/lists/*
+
+
 #
 # Declutter
 
