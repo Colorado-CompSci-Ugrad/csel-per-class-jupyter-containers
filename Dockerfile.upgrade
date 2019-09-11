@@ -427,9 +427,11 @@ RUN	conda install -c conda-forge \
 ## Perf, MPICH
 ## You need to enable CAP_SYS_ADMIN to use perf in Docker
 ## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
-#RUN	apt-get update && \
-#	apt-get install -yq --no-install-recommends linux-tools-common linux-tools-`uname -r` mpich hwloc && \
-#	rm -rf /var/lib/apt/lists/*
+RUN  apt-get update && \
+     apt-get install -yq --no-install-recommends linux-tools-generic mpich hwloc && \
+     cd /usr/lib/linux-tools && \
+     find `pwd` -name perf | xargs -I org_perf ln -s org_perf /usr/local/bin/perf && \
+     rm -rf /var/lib/apt/lists/*
 
 
 #
