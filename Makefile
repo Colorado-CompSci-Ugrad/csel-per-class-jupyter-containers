@@ -7,11 +7,11 @@ GCE_PROJECT_NAME=emerald-agility-749
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
 NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook
-NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.62
+NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.63
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 build:
-	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile.upgrade .
+	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile.based .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
 
