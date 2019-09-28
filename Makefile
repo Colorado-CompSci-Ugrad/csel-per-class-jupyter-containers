@@ -11,7 +11,7 @@ NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.63
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 build:
-	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile.based .
+	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
 
