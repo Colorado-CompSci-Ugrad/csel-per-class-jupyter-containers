@@ -1,6 +1,6 @@
 ARG BASE_CONTAINER=jupyter/datascience-notebook:1386e2046833
 FROM $BASE_CONTAINER
-MAINTAINER CSEL Ops <admin@cs.colorado.edu>
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>""
 
 #############################################################################
 ## CU specific
