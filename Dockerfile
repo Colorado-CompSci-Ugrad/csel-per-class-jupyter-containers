@@ -81,12 +81,12 @@ RUN	(cd /tmp && \
 #RUN	
 #	jupyter labextension install jupyterlab-server-proxy
 
-RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b1
+RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b3
 
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
 	cd /opt/code-server && \
-	wget -qO- https://github.com/cdr/code-server/releases/download/2.1638-vsc1.39.2/code-server2.1638-vsc1.39.2-linux-x86_64.tar.gz | tar zxvf - --strip-components=1
+	wget -qO- https://github.com/cdr/code-server/releases/download/2.1665-vsc1.39.2/code-server2.1665-vsc1.39.2-linux-x86_64.tar.gz | tar zxvf - --strip-components=1
 ENV	PATH=/opt/code-server:$PATH
 
 ##
