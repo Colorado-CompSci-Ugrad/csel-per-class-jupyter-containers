@@ -110,7 +110,8 @@ RUN	conda install -c conda-forge  \
 ## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
      DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-     				    linux-tools-generic mpich libmpich-dev hwloc && \
+     				    linux-tools-generic mpich libmpich-dev hwloc \
+				    libopencv-dev && \
      cd /usr/lib/linux-tools && \
      find `pwd` -name perf | xargs -I org_perf ln -s org_perf /usr/local/bin/perf && \
      rm -rf /var/lib/apt/lists/*
