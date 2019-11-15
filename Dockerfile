@@ -86,7 +86,7 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extr
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
 	cd /opt/code-server && \
-	wget -qO- https://github.com/cdr/code-server/releases/download/2.1665-vsc1.39.2/code-server2.1665-vsc1.39.2-linux-x86_64.tar.gz | tar zxvf - --strip-components=1
+	wget -qO- https://github.com/cdr/code-server/releases/download/2.1692-vsc1.39.2/code-server2.1692-vsc1.39.2-linux-x86_64.tar.gz  | tar zxvf - --strip-components=1
 ENV	PATH=/opt/code-server:$PATH
 
 ##
@@ -111,7 +111,7 @@ RUN	conda install -c conda-forge  \
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
      DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
      				    linux-tools-generic mpich libmpich-dev hwloc \
-				    libopencv-dev && \
+				    libopencv-dev postgresql-client && \
      cd /usr/lib/linux-tools && \
      find `pwd` -name perf | xargs -I org_perf ln -s org_perf /usr/local/bin/perf && \
      rm -rf /var/lib/apt/lists/*
