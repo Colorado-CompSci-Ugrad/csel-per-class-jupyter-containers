@@ -111,7 +111,7 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
 # Add material for AI classes
 #
 
-RUN	$CONDA_DIR/bin/pip install bqplot tensorflow qpsolvers \
+RUN	$CONDA_DIR/bin/pip install bqplot ipythonblocks tensorflow qpsolvers \
 			   quadprog opencv-python keras Image && \
 	jupyter labextension install bqplot
 
