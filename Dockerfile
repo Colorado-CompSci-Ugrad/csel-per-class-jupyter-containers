@@ -50,6 +50,10 @@ RUN	conda install --no-update-deps -c conda-forge --freeze-installed \
       	jupyter labextension install beakerx-jupyterlab && \
 	$CONDA_DIR/bin/pip install nbgitpuller
 
+RUN	$CONDA_DIR/bin/pip install bqplot
+RUN	jupyter labextension install bqplot
+
+
 RUN    jupyter labextension install @jupyterlab/git && \
        $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
        jupyter serverextension enable --py --sys-prefix jupyterlab_git
