@@ -50,22 +50,9 @@ RUN	conda install --no-update-deps -c conda-forge --freeze-installed \
       	jupyter labextension install beakerx-jupyterlab && \
 	$CONDA_DIR/bin/pip install nbgitpuller
 
-RUN	$CONDA_DIR/bin/pip install bqplot
-RUN	jupyter labextension install bqplot
-
-
 RUN    jupyter labextension install @jupyterlab/git && \
        $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
        jupyter serverextension enable --py --sys-prefix jupyterlab_git
-
-#
-# Turtle graphics - not usable yet
-#
-#RUN	jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-#	cd /opt && \
-#	git clone https://github.com/dirkcgrunwald/mobilechelonian.git && \
-#	cd mobilechelonian && \
-#	python setup.py install 
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
@@ -119,6 +106,14 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
      cd /usr/lib/linux-tools && \
      find `pwd` -name perf | xargs -I org_perf ln -s org_perf /usr/local/bin/perf && \
      rm -rf /var/lib/apt/lists/*
+
+#
+# Add material for AI classes
+#
+
+RUN	$CONDA_DIR/bin/pip install bqplot tensorflow qpsolvers \
+			   quadprog opencv-python keras Image && \
+	jupyter labextension install bqplot
 
 #
 # Declutter
