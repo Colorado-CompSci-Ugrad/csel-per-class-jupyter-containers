@@ -11,6 +11,8 @@ NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.69
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 build:
+#	gcloud builds submit --tag $(NOTEBOOK_VERSION) .
+#	gcloud builds submit --tag $(NOTEBOOK_LATEST) .
 	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
