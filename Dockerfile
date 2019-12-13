@@ -112,8 +112,11 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
 #
 
 RUN	$CONDA_DIR/bin/pip install bqplot ipythonblocks tensorflow qpsolvers \
-			   quadprog opencv-python keras Image && \
-	jupyter labextension install bqplot
+			   quadprog opencv-python keras Image jp_proxy_widget \
+			   git+https://github.com/aaronwatters/jp_doodle && \
+	jupyter labextension install bqplot && \
+	jupyter nbextension enable --py --sys-prefix jp_proxy_widget && \
+	jupyter labextension install jp_proxy_widget
 
 #
 # Declutter
