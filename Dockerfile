@@ -125,8 +125,6 @@ RUN	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
 	clojure groovy kotlin xcpp14
 
 
-ENV	PATH=/opt/theia/node_modules/.bin:$PATH
-
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
