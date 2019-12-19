@@ -130,7 +130,11 @@ ENV	PATH=/opt/theia/node_modules/.bin:$PATH
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
-RUN	rm -rf /home/jovyan  && \
+#
+# Prevent core dumps, get rid of jovyan which will be over-mounted
+#
+RUN	echo "*               soft    core            0" >> /etc/security/limits.conf && \
+	rm -rf /home/jovyan  && \
 	mkdir /home/jovyan && \
 	chown $NB_UID:$NB_GID /home/jovyan && \
 	rm -rf /usr/local/bin/fix-permissions
