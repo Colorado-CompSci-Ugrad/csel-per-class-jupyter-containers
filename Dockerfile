@@ -112,8 +112,11 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
 #
 
 RUN	$CONDA_DIR/bin/pip install bqplot ipythonblocks tensorflow qpsolvers \
-			   quadprog opencv-python keras Image && \
-	jupyter labextension install bqplot
+			   quadprog opencv-python keras Image jp_proxy_widget \
+			   git+https://github.com/aaronwatters/jp_doodle && \
+	jupyter labextension install bqplot && \
+	jupyter nbextension enable --py --sys-prefix jp_proxy_widget && \
+	jupyter labextension install jp_proxy_widget
 
 #
 # Declutter
@@ -122,16 +125,13 @@ RUN	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
 	clojure groovy kotlin xcpp14
 
 
-ENV	PATH=/opt/theia/node_modules/.bin:$PATH
-
 COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
 #
 # Prevent core dumps, get rid of jovyan which will be over-mounted
 #
-RUN	echo "*               soft    core            0" >> /etc/security/limits.conf && \
-	rm -rf /home/jovyan  && \
+RUN	rm -rf /home/jovyan  && \
 	mkdir /home/jovyan && \
 	chown $NB_UID:$NB_GID /home/jovyan && \
 	rm -rf /usr/local/bin/fix-permissions
