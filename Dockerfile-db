@@ -1,0 +1,32 @@
+ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:v1.0.75
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+				    postgresql-client
+
+##
+## Geopython, XML
+##
+RUN	conda install -c conda-forge  \
+	conda-forge::gdal conda-forge:libgdal \
+	conda-forge::lxml conda-forge::geopandas conda-forge::geoplot \
+	conda-forge::folium conda-forge::pysal conda-forge::esda conda-forge::rasterio conda-forge::poppler \
+	conda-forge::psycopg2 conda-forge::mysqlclient conda-forge::ipython-sql && \
+	conda clean -afy && \
+	DEBIAN_FRONTEND=noninteractive apt-get update && \	
+	DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+				       	        xqilla libxqilla-dev && \
+	rm -rf /var/lib/apt/lists/* && \
+	$CONDA_DIR/bin/pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
+
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan && \
+        rm -rf /usr/local/bin/fix-permissions
+
+USER    $NB_UID
