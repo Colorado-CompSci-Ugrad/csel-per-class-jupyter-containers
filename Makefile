@@ -11,7 +11,7 @@ NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.75
 NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl
-NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.75
+NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.76
 NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
 
 NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db
@@ -27,9 +27,9 @@ NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.75
 NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
 
 
-build-all: build build-pl build-db build-mpi build-ai
+build: build-notebook build-pl build-db build-mpi build-ai
 
-build:
+build-notebook:
 	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
@@ -68,14 +68,24 @@ tag:
 	-docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_VERSION)
 	-docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
 
-push:
+push: push-notebook push-pl push-db push-mpi push-ai
+
+push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
 	-docker push $(NOTEBOOK_LATEST)
+
+push-pl: build-pl
 	-docker push $(NOTEBOOK_PL_VERSION)
 	-docker push $(NOTEBOOK_PL_LATEST)
+
+push-db: build-db
 	-docker push $(NOTEBOOK_DB_VERSION)
 	-docker push $(NOTEBOOK_DB_LATEST)
+
+push-mpi:build-mpi
 	-docker push $(NOTEBOOK_MPI_VERSION)
 	-docker push $(NOTEBOOK_MPI_LATEST)
+
+push-ai: build-ai
 	-docker push $(NOTEBOOK_AI_VERSION)
 	-docker push $(NOTEBOOK_AI_LATEST)

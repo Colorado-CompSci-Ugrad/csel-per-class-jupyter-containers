@@ -1,13 +1,11 @@
-ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:v1.0.75
+ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:latest
 FROM $BASE_CONTAINER
 LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
 
 USER root
 
-ENV DEBIAN_FRONTEND noninteractive
-
 RUN     conda install --no-update-deps -c conda-forge --freeze-installed \
-	      beakerx>1.3.0 xeus-cling && \
+	      beakerx>1.3.0 && \
         conda clean -afy && \
         jupyter labextension install beakerx-jupyterlab
 
@@ -15,7 +13,7 @@ RUN     conda install --no-update-deps -c conda-forge --freeze-installed \
 # Declutter
 #
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
-        clojure groovy kotlin
+        clojure groovy kotlin sql
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
