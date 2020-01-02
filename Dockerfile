@@ -43,7 +43,7 @@ RUN	curl https://cli-assets.heroku.com/install.sh | sh
 RUN     conda install -c conda-forge --freeze-installed \
               python-language-server flake8 autopep8 \
 	      altair vega_datasets \
-	      bokeh \
+	      bokeh datashader holoviews \
               jupyter-server-proxy && \
 	jupyter labextension install --no-build @bokeh/jupyter_bokeh && \
         $CONDA_DIR/bin/pip install -vvv git+git://github.com/jupyterhub/jupyter-server-proxy@master && \
