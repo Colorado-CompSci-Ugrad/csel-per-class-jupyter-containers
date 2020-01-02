@@ -42,15 +42,20 @@ RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
 RUN     conda install -c conda-forge --freeze-installed \
               python-language-server flake8 autopep8 \
+	      altair vega_datasets \
+	      bokeh \
               jupyter-server-proxy && \
-        conda clean -afy && \
+	jupyter labextension install --no-build @bokeh/jupyter_bokeh && \
         $CONDA_DIR/bin/pip install -vvv git+git://github.com/jupyterhub/jupyter-server-proxy@master && \
-        jupyter serverextension enable --py --sys-prefix jupyter_server_proxy
+        jupyter serverextension enable --py --sys-prefix jupyter_server_proxy && \
+        conda clean -afy
+
 
 RUN     (cd /tmp && \
         git clone https://github.com/jupyterhub/jupyter-server-proxy && \
         cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
-        npm install && npm run build && jupyter labextension link . )
+        npm install && npm run build && jupyter labextension link . && \
+	rm -rf /tmp/jupyter-server-proxy )
 
 RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b3
 
