@@ -10,7 +10,8 @@ ENV DEBIAN_FRONTEND noninteractive
 # Add material for AI classes
 #
 
-RUN	$CONDA_DIR/bin/pip install bqplot ipythonblocks tensorflow qpsolvers \
+RUN	conda install -c conda-forge scikit-learn=0.22.* && \
+	$CONDA_DIR/bin/pip install bqplot ipythonblocks tensorflow qpsolvers \
 			   quadprog opencv-python keras Image jp_proxy_widget \
 			   git+https://github.com/aaronwatters/jp_doodle && \
 	jupyter labextension install  --no-build bqplot && \

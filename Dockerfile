@@ -66,6 +66,14 @@ RUN	cd /opt && \
 ENV	PATH=/opt/code-server:$PATH
 
 ##
+## gtest
+##
+RUN	cd /usr/src/gtest && \
+	cmake CMakeLists.txt && \
+	make && \
+	cp *.a /usr/lib
+
+##
 ## Build jupyter lab extensions
 ##
 RUN	jupyter lab build
