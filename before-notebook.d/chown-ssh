@@ -1,6 +1,0 @@
-#!/bin/bash
-
-if [[ -d "$HOME/.ssh" ]] && [[ -n $(find "$HOME/.ssh" -perm /go+rwx) ]]; then
-   echo "Set proper permissions on .ssh"
-   chmod -R go-rwx $HOME/.ssh
-fi

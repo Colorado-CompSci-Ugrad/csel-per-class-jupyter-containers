@@ -62,7 +62,7 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extr
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
 	cd /opt/code-server && \
-	wget -qO- https://github.com/cdr/code-server/releases/download/2.1692-vsc1.39.2/code-server2.1692-vsc1.39.2-linux-x86_64.tar.gz  | tar zxvf - --strip-components=1
+	wget -qO- https://github.com/cdr/code-server/releases/download/2.1698/code-server2.1698-vsc1.41.1-linux-x86_64.tar.gz | tar zxvf - --strip-components=1
 ENV	PATH=/opt/code-server:$PATH
 
 ##
@@ -78,7 +78,6 @@ RUN	cd /usr/src/gtest && \
 ##
 RUN	jupyter lab build
 
-COPY	before-notebook.d /usr/local/bin/before-notebook.d
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
 #
