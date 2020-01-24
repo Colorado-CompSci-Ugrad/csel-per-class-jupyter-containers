@@ -26,8 +26,11 @@ NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai
 NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.82
 NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
 
+NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos
+NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.82
+NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos
 
 build-notebook:
 	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
@@ -54,7 +57,10 @@ build-ai:
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_VERSION)
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
 
-
+build-chaos:
+	docker build -t $(NOTEBOOK_CHAOS_VERSION) -t $(NOTEBOOK_CHAOS_LATEST) -f Dockerfile-chaos .
+	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_VERSION)
+	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
@@ -67,8 +73,11 @@ tag:
 	-docker tag $(NOTEBOOK_MPI_IMAGE) $(NOTEBOOK_MPI_LATEST)
 	-docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_VERSION)
 	-docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
+	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_VERSION)
+	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 
-push: push-notebook push-pl push-db push-mpi push-ai
+
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -89,3 +98,7 @@ push-mpi:build-mpi
 push-ai: build-ai
 	-docker push $(NOTEBOOK_AI_VERSION)
 	-docker push $(NOTEBOOK_AI_LATEST)
+
+push-chaos: build-chaos
+	-docker push $(NOTEBOOK_CHAOS_VERSION)
+	-docker push $(NOTEBOOK_CHAOS_LATEST)
