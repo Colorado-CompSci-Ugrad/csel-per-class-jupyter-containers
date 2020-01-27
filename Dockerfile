@@ -49,7 +49,7 @@ RUN     conda install -c conda-forge --freeze-installed \
 	jupyter labextension install --no-build @bokeh/jupyter_bokeh && \
         $CONDA_DIR/bin/pip install -vvv git+git://github.com/jupyterhub/jupyter-server-proxy@master && \
         jupyter serverextension enable --py --sys-prefix jupyter_server_proxy && \
-	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp14 && \
+	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp11 xcpp14 && \
         conda clean -afy
 
 
