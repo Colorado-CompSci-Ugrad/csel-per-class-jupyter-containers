@@ -22,7 +22,7 @@ RUN apt-get update \
 		mysql-client apt-transport-https psmisc graphviz vim ffmpeg \
 		 fonts-dejavu \
 		 gfortran \
-		 googletest libopencv-dev && \
+		 googletest libopencv-dev clang-9 lldb-9 && \
 	rm -rf /var/lib/apt/lists/*
 
 
@@ -59,8 +59,6 @@ RUN     (cd /tmp && \
         npm install && npm run build && jupyter labextension link . && \
 	rm -rf /tmp/jupyter-server-proxy )
 
-RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b3
-
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
 	cd /opt/code-server && \
@@ -74,6 +72,18 @@ RUN	cd /usr/src/gtest && \
 	cmake CMakeLists.txt && \
 	make && \
 	cp *.a /usr/lib
+
+RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
+	       --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b3
+
+##	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
+##	       --extra-index-url https://pypi.org/simple jupyter-gdbgui-proxy==1.0b3 && \
+##	$CONDA_DIR/bin/pip  install gdbgui
+
+RUN	$CONDA_DIR/bin/pip install --pre jupyter-lsp && \
+	jupyter labextension install @krassowski/jupyterlab-lsp && \
+	conda install -c conda-forge python-language-server r-languageserver && \
+	jupyter labextension install @jupyterlab/google-drive
 
 ##
 ## Build jupyter lab extensions
