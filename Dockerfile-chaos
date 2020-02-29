@@ -1,0 +1,29 @@
+ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:latest
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+##
+## Perf, MPICH
+## You need to enable CAP_SYS_ADMIN to use perf in Docker
+## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
+RUN apt-get update && \
+    apt-get install curl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -o /tmp/TISEAN_3.0.0-linux-amd64.tar.gz https://www.pks.mpg.de/~tisean/TISEAN_3.0.0-linux-amd64.tar.gz && \
+    cd /tmp/ && tar -xvf /tmp/TISEAN_3.0.0-linux-amd64.tar.gz Tisean_3.0.0/bin --strip=1 && \
+    chmod -Rv +x /tmp/bin && \
+    mv /tmp/bin/* /usr/bin && \
+    rm -rv /tmp/TISEAN_3.0.0-linux-amd64.tar.gz && \
+    rm -rfv /tmp/bin
+
+RUN rm -rf /home/jovyan  && \
+    mkdir /home/jovyan && \
+    chown $NB_UID:$NB_GID /home/jovyan && \
+    rm -rf /usr/local/bin/fix-permissions
+
+USER $NB_UID
