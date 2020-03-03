@@ -41,7 +41,7 @@ RUN 	$CONDA_DIR/bin/pip install jupyterlab_latex && \
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
 RUN     conda install -c conda-forge --freeze-installed \
-              python-language-server r-languageserver flake8 autopep8 \
+              python-language-server flake8 autopep8 \
 	      altair vega_datasets \
 	      bokeh datashader holoviews \
 	      xeus-cling \
@@ -49,12 +49,25 @@ RUN     conda install -c conda-forge --freeze-installed \
 	jupyter labextension install --no-build @bokeh/jupyter_bokeh && \
         $CONDA_DIR/bin/pip install -vvv git+git://github.com/jupyterhub/jupyter-server-proxy@master && \
         jupyter serverextension enable --py --sys-prefix jupyter_server_proxy && \
-	$CONDA_DIR/bin/pip install --pre jupyter-lsp && \
-	jupyter labextension install @jupyterlab/server-proxy && \
-	jupyter labextension install @krassowski/jupyterlab-lsp && \
-	jupyter labextension install @jupyterlab/google-drive && \
 	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp11 xcpp14 && \
         conda clean -afy
+
+
+RUN     (cd /tmp && \
+        git clone https://github.com/jupyterhub/jupyter-server-proxy && \
+        cd /tmp/jupyter-server-proxy/jupyterlab-server-proxy && \
+        npm install && npm run build && jupyter labextension link . && \
+	rm -rf /tmp/jupyter-server-proxy )
+#
+# jupyter-LSP appears to cause hangs -- see https://github.com/krassowski/jupyterlab-lsp/issues/200
+#
+#	$CONDA_DIR/bin/pip install --pre jupyter-lsp && \
+#	jupyter labextension install @krassowski/jupyterlab-lsp && \
+#
+# Not ready for prime time
+#
+#	jupyter labextension install @jupyterlab/google-drive && \
+
 
 RUN	cd /opt && \
 	mkdir /opt/code-server && \
