@@ -13,7 +13,7 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
 ##
 RUN	conda install -c conda-forge  \
 	conda-forge::gdal conda-forge:libgdal \
-	conda-forge::lxml conda-forge::geopandas conda-forge::geoplot \
+	conda-forge::lxml conda-forge:libiconv conda-forge::geopandas conda-forge::geoplot \
 	conda-forge::folium conda-forge::pysal conda-forge::esda conda-forge::rasterio conda-forge::poppler \
 	conda-forge::psycopg2 conda-forge::mysqlclient conda-forge::ipython-sql && \
 	conda clean -afy && \
