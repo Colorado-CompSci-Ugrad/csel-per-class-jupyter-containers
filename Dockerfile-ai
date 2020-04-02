@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:latest
+ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:v1.0.92
 FROM $BASE_CONTAINER
 LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
 

@@ -52,6 +52,8 @@ RUN     conda install -c conda-forge --freeze-installed \
 	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp11 xcpp14 && \
         conda clean -afy
 
+RUN	conda install -c conda-forge networkx pygraphviz pydot pyyaml && \
+	conda clean -afy
 
 RUN     (cd /tmp && \
         git clone https://github.com/jupyterhub/jupyter-server-proxy && \

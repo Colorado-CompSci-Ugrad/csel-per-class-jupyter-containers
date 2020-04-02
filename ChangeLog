@@ -1,3 +1,14 @@
+2020-04-02    <grunwald@nfs1-central1>
+
+	* Dockerfile: Add networkx pygraphviz pydot pyyaml to base notebook
+
+	* Dockerfile: This is a little after-the-fact documentation. We had enabled
+	the LSP (language server protocol) extension for JupyterHub
+	notebooks but an open issue causes notebooks to them freeze
+	randomly. See
+	https://github.com/krassowski/jupyterlab-lsp/issues/200 for more
+	information. Until that is fixed, we've disabled this.
+
 2019-08-23  Dirk Grunwald  <grunwald@dirk-macpro18.local>
 
 	* https://github.com/jupyterhub/the-littlest-jupyterhub/issues/289
