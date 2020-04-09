@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=gcr.io/emerald-agility-749/notebook:v1.0.92
+ARG BASE_CONTAINER=define_as_build_arg
 FROM $BASE_CONTAINER
 LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
 

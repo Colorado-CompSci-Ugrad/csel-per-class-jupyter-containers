@@ -4,61 +4,77 @@ GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ## cluster, but normally you should be pushing to the default
 ##
 GCE_PROJECT_NAME=emerald-agility-749
+DEV_LABEL=
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
-NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook
-NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.94
-NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:1386e2046833"
 
-NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl
-NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.92
-NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
+export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.94
+export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
-NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db
-NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.93
-NOTEBOOK_DB_LATEST = $(NOTEBOOK_DB_IMAGE):latest
+#
+# The base version from which most other images are built
+#
+export NOTEBOOK_COMMON_BASE=v1.0.92
 
-NOTEBOOK_MPI_IMAGE = $(DOCKER_REPO)/notebook-mpi
-NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.92
-NOTEBOOK_MPI_LATEST = $(NOTEBOOK_MPI_IMAGE):latest
+export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
+export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.92
+export NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
 
-NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai
-NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.92
-NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
+export NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db$(DEV_LABEL)
+export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.93
+export NOTEBOOK_DB_LATEST = $(NOTEBOOK_DB_IMAGE):latest
 
-NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos
-NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.92
-NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
+export NOTEBOOK_MPI_IMAGE = $(DOCKER_REPO)/notebook-mpi$(DEV_LABEL)
+export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.92
+export NOTEBOOK_MPI_LATEST = $(NOTEBOOK_MPI_IMAGE):latest
+
+export NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai$(DEV_LABEL)
+export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.92
+export NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
+
+export NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos$(DEV_LABEL)
+export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.92
+export NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
 
 build: build-notebook build-pl build-db build-mpi build-ai build-chaos
 
+DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
+
 build-notebook:
-	docker build -t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_BASE)" \
+		-t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
 
 build-pl:
-	docker build -t $(NOTEBOOK_PL_VERSION) -t $(NOTEBOOK_PL_LATEST) -f Dockerfile-pl .
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_PL_VERSION) -t $(NOTEBOOK_PL_LATEST) -f Dockerfile-pl .
 	docker tag $(NOTEBOOK_PL_IMAGE) $(NOTEBOOK_PL_VERSION)
 	docker tag $(NOTEBOOK_PL_IMAGE) $(NOTEBOOK_PL_LATEST)
 
 build-db:
-	docker build -t $(NOTEBOOK_DB_VERSION) -t $(NOTEBOOK_DB_LATEST) -f Dockerfile-db .
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_DB_VERSION) -t $(NOTEBOOK_DB_LATEST) -f Dockerfile-db .
 	docker tag $(NOTEBOOK_DB_IMAGE) $(NOTEBOOK_DB_VERSION)
 	docker tag $(NOTEBOOK_DB_IMAGE) $(NOTEBOOK_DB_LATEST)
 
 build-mpi:
-	docker build -t $(NOTEBOOK_MPI_VERSION) -t $(NOTEBOOK_MPI_LATEST) -f Dockerfile-mpi .
+	docker  build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_MPI_VERSION) -t $(NOTEBOOK_MPI_LATEST) -f Dockerfile-mpi .
 	docker tag $(NOTEBOOK_MPI_IMAGE) $(NOTEBOOK_MPI_VERSION)
 	docker tag $(NOTEBOOK_MPI_IMAGE) $(NOTEBOOK_MPI_LATEST)
 
 build-ai:
-	docker build -t $(NOTEBOOK_AI_VERSION) -t $(NOTEBOOK_AI_LATEST) -f Dockerfile-ai .
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		-t $(NOTEBOOK_AI_VERSION) -t $(NOTEBOOK_AI_LATEST) -f Dockerfile-ai .
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_VERSION)
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
 
 build-chaos:
-	docker build -t $(NOTEBOOK_CHAOS_VERSION) -t $(NOTEBOOK_CHAOS_LATEST) -f Dockerfile-chaos .
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_CHAOS_VERSION) -t $(NOTEBOOK_CHAOS_LATEST) -f Dockerfile-chaos .
 	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_VERSION)
 	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 
