@@ -4,7 +4,7 @@ GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ## cluster, but normally you should be pushing to the default
 ##
 GCE_PROJECT_NAME=emerald-agility-749
-DEV_LABEL=
+DEV_LABEL=-dev
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:1386e2046833"
@@ -16,7 +16,7 @@ export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v1.0.92
+export NOTEBOOK_COMMON_BASE=v1.0.94
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.92
