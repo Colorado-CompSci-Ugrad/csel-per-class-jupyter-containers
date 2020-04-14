@@ -7,10 +7,10 @@ GCE_PROJECT_NAME=emerald-agility-749
 DEV_LABEL=
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
-export NOTEBOOK_BASE = "jupyter/datascience-notebook:1386e2046833"
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:dc9744740e12"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.94
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.95
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #

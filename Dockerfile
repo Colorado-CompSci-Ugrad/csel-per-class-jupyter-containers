@@ -19,7 +19,7 @@ RUN apt-get update \
 				   build-essential libc6-dev-i386 man \
 				   valgrind gcc-multilib g++-multilib \
 				   software-properties-common python3-software-properties curl gnupg \
-		mysql-client apt-transport-https psmisc graphviz vim ffmpeg \
+		mysql-client apt-transport-https psmisc graphviz graphviz-dev vim ffmpeg \
 		 fonts-dejavu \
 		 gfortran \
 		 googletest libopencv-dev clang-9 lldb-9 && \
@@ -28,15 +28,19 @@ RUN apt-get update \
 
 RUN	$CONDA_DIR/bin/pip install nbgitpuller
 
-RUN    jupyter labextension install  --no-build @jupyterlab/git && \
-       $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
-       jupyter serverextension enable --py --sys-prefix jupyterlab_git
+# RUN    jupyter labextension install  --no-build @jupyterlab/git && \
+#        $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
+#        jupyter serverextension enable --py --sys-prefix jupyterlab_git
 
 RUN 	$CONDA_DIR/bin/pip install jupyterlab_latex && \
 	conda clean -afy && \
 	jupyter labextension install --no-build @jupyterlab/latex && \
-	jupyter labextension install --no-build  @mflevine/jupyterlab_html && \
-	jupyter labextension install --no-build jupyterlab-drawio
+#
+# These do not work with new Jupyterlab 2.x interfaces yet 4/9/2020 - dcg
+#
+#	jupyter labextension install --no-build  @mflevine/jupyterlab_html && \
+#	jupyter labextension install --no-build jupyterlab-drawio
+	echo this line intentionally left blank
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
@@ -52,8 +56,7 @@ RUN     conda install -c conda-forge --freeze-installed \
 	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp11 xcpp14 && \
         conda clean -afy
 
-RUN	conda install -c conda-forge networkx pygraphviz pydot pyyaml && \
-	conda clean -afy
+RUN	pip install networkx pygraphviz pydot pyyaml
 
 RUN     (cd /tmp && \
         git clone https://github.com/jupyterhub/jupyter-server-proxy && \
@@ -95,7 +98,7 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##
 ## Build jupyter lab extensions
 ##
-RUN	jupyter lab build
+RUN	jupyter lab build && jupyter lab clean
 
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
 
