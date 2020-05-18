@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=jupyter/datascience-notebook:1386e2046833
+ARG BASE_CONTAINER=jupyter/datascience-notebook:lab-2.1.1
 FROM $BASE_CONTAINER
 LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
 
@@ -35,12 +35,7 @@ RUN	$CONDA_DIR/bin/pip install nbgitpuller
 RUN 	$CONDA_DIR/bin/pip install jupyterlab_latex && \
 	conda clean -afy && \
 	jupyter labextension install --no-build @jupyterlab/latex && \
-#
-# These do not work with new Jupyterlab 2.x interfaces yet 4/9/2020 - dcg
-#
-#	jupyter labextension install --no-build  @mflevine/jupyterlab_html && \
-#	jupyter labextension install --no-build jupyterlab-drawio
-	echo this line intentionally left blank
+	jupyter labextension install --no-build jupyterlab-drawio
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
@@ -101,6 +96,7 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 RUN	jupyter lab build && jupyter lab clean
 
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
+COPY	start-notebook.d /usr/local/bin/before-notebook.d
 
 #
 # Prevent core dumps, get rid of jovyan which will be over-mounted

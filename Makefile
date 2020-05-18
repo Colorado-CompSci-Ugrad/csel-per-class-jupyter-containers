@@ -4,38 +4,39 @@ GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ## cluster, but normally you should be pushing to the default
 ##
 GCE_PROJECT_NAME=emerald-agility-749
-DEV_LABEL=
+DEV_LABEL=-dev
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
-export NOTEBOOK_BASE = "jupyter/datascience-notebook:dc9744740e12"
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:lab-2.1.1"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.95
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.97
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v1.0.92
+export NOTEBOOK_COMMON_BASE=v1.0.97
+export NOTEBOOK_COMMON_BASE_AI=v1.0.92
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
-export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.92
+export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.97
 export NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
 
 export NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db$(DEV_LABEL)
-export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.93
+export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.97
 export NOTEBOOK_DB_LATEST = $(NOTEBOOK_DB_IMAGE):latest
 
 export NOTEBOOK_MPI_IMAGE = $(DOCKER_REPO)/notebook-mpi$(DEV_LABEL)
-export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.92
+export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.97
 export NOTEBOOK_MPI_LATEST = $(NOTEBOOK_MPI_IMAGE):latest
 
 export NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai$(DEV_LABEL)
-export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.92
+export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.97
 export NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
 
 export NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos$(DEV_LABEL)
-export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.92
+export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.97
 export NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
 
 build: build-notebook build-pl build-db build-mpi build-ai build-chaos
@@ -67,7 +68,7 @@ build-mpi:
 	docker tag $(NOTEBOOK_MPI_IMAGE) $(NOTEBOOK_MPI_LATEST)
 
 build-ai:
-	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_AI)" \
 		-t $(NOTEBOOK_AI_VERSION) -t $(NOTEBOOK_AI_LATEST) -f Dockerfile-ai .
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_VERSION)
 	docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
