@@ -4,7 +4,7 @@ GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ## cluster, but normally you should be pushing to the default
 ##
 GCE_PROJECT_NAME=emerald-agility-749
-DEV_LABEL=-dev
+DEV_LABEL=
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:lab-2.1.1"
