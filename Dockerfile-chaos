@@ -11,7 +11,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ## You need to enable CAP_SYS_ADMIN to use perf in Docker
 ## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
 RUN apt-get update && \
-    apt-get install curl && \
+    apt-get -y install curl && \
     rm -rf /var/lib/apt/lists/*
 
 RUN curl -o /tmp/TISEAN_3.0.0-linux-amd64.tar.gz https://www.pks.mpg.de/~tisean/TISEAN_3.0.0-linux-amd64.tar.gz && \
