@@ -1,16 +1,15 @@
-https://www.youtube.com/watch?v=bbKjXKV9QNA&feature=youtu.behttps://www.youtube.com/watch?v=bbKjXKV9QNA&feature=youtu.behttps://www.youtube.com/watch?v=bbKjXKV9QNA&feature=youtu.beGCE_PROJECT_NAME=$(shell gcloud config get-value project)
+GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ##
 ## You can use the preceding definition if you're pushing to a dev
 ## cluster, but normally you should be pushing to the default
 ##
 GCE_PROJECT_NAME=emerald-agility-749
-DEV_LABEL=-dev
+DEV_LABEL=
 ifndef $(DOCKER_REPO)
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 endif
 
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:lab-2.1.5"
-#export NOTEBOOK_BASE = "jupyter/datascience-notebook:dd2087c75645"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.115

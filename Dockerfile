@@ -20,7 +20,7 @@ RUN apt-get update \
 				   net-tools \
 				   openssh-client gdb \
 				   build-essential libc6-dev-i386 man \
-				   valgrind gcc-multilib g++-multilib \
+				   valgrind gcc-multilib g++-multilib libgmp-dev\
 				   software-properties-common python3-software-properties curl gnupg \
 		mysql-client apt-transport-https psmisc graphviz graphviz-dev vim ffmpeg \
 		 fonts-dejavu \
@@ -72,7 +72,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/3.4.0/code-server_3.4.0_amd64.deb && \
+	wget https://github.com/cdr/code-server/releases/download/3.4.1/code-server_3.4.1_amd64.deb && \
 	dpkg -i ./code-server*.deb
 
 ##
