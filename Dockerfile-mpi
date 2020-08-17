@@ -19,7 +19,6 @@ RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
-        chown $NB_UID:$NB_GID /home/jovyan && \
-        rm -rf /usr/local/bin/fix-permissions
+        chown $NB_UID:$NB_GID /home/jovyan
 
 USER    $NB_UID

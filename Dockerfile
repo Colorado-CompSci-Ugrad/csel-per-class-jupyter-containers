@@ -103,7 +103,6 @@ COPY	start-notebook.d /usr/local/bin/before-notebook.d
 #
 RUN	rm -rf /home/jovyan  && \
 	mkdir /home/jovyan && \
-	chown $NB_UID:$NB_GID /home/jovyan && \
-	rm -rf /usr/local/bin/fix-permissions
+	chown $NB_UID:$NB_GID /home/jovyan
 
 USER	$NB_UID

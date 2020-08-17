@@ -12,36 +12,41 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:lab-2.1.5"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.115
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.116
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v1.0.115
-export NOTEBOOK_COMMON_BASE_AI=v1.0.115
+export NOTEBOOK_COMMON_BASE=v1.0.116
+export NOTEBOOK_COMMON_BASE_AI=v1.0.116
+export NOTEBOOK_COMMON_BASE_PL=v1.0.92
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
-export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.115
+export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.116
 export NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
 
 export NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db$(DEV_LABEL)
-export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.115
+export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.116
 export NOTEBOOK_DB_LATEST = $(NOTEBOOK_DB_IMAGE):latest
 
 export NOTEBOOK_MPI_IMAGE = $(DOCKER_REPO)/notebook-mpi$(DEV_LABEL)
-export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.115
+export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.116
 export NOTEBOOK_MPI_LATEST = $(NOTEBOOK_MPI_IMAGE):latest
 
 export NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai$(DEV_LABEL)
-export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.115
+export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.116
 export NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
 
 export NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos$(DEV_LABEL)
-export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.115
+export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.116
 export NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos
+export NOTEBOOK_DC_IMAGE = $(DOCKER_REPO)/notebook-dc$(DEV_LABEL)
+export NOTEBOOK_DC_VERSION = $(NOTEBOOK_DC_IMAGE):v1.0.117
+export NOTEBOOK_DC_LATEST = $(NOTEBOOK_DC_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -52,7 +57,7 @@ build-notebook:
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
 
 build-pl:
-	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_AI)" \
 		$(DOCKER_ARGS) -t $(NOTEBOOK_PL_VERSION) -t $(NOTEBOOK_PL_LATEST) -f Dockerfile-pl .
 	docker tag $(NOTEBOOK_PL_IMAGE) $(NOTEBOOK_PL_VERSION)
 	docker tag $(NOTEBOOK_PL_IMAGE) $(NOTEBOOK_PL_LATEST)
@@ -81,6 +86,14 @@ build-chaos:
 	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_VERSION)
 	docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 
+build-dc:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_DC_VERSION) -t $(NOTEBOOK_DC_LATEST) -f Dockerfile-dc .
+	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
+	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
+
+
+
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
@@ -94,9 +107,11 @@ tag:
 	-docker tag $(NOTEBOOK_AI_IMAGE) $(NOTEBOOK_AI_LATEST)
 	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_VERSION)
 	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
+	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
+	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -121,3 +136,7 @@ push-ai: build-ai
 push-chaos: build-chaos
 	-docker push $(NOTEBOOK_CHAOS_VERSION)
 	-docker push $(NOTEBOOK_CHAOS_LATEST)
+
+push-dc: build-dc
+	-docker push $(NOTEBOOK_DC_VERSION)
+	-docker push $(NOTEBOOK_DC_LATEST)

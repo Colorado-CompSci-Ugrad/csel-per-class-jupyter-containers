@@ -23,7 +23,6 @@ RUN curl -o /tmp/TISEAN_3.0.0-linux-amd64.tar.gz https://www.pks.mpg.de/~tisean/
 
 RUN rm -rf /home/jovyan  && \
     mkdir /home/jovyan && \
-    chown $NB_UID:$NB_GID /home/jovyan && \
-    rm -rf /usr/local/bin/fix-permissions
+    chown $NB_UID:$NB_GID /home/jovyan
 
 USER $NB_UID
