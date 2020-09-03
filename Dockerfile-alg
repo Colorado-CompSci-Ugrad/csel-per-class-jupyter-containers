@@ -1,0 +1,24 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM ${BASE_CONTAINER}
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+#
+# Add PuLP
+#
+RUN pip install pulp 
+
+#
+# Add simple-sat
+#
+RUN cd /opt  && \
+    git clone https://github.com/sahands/simple-sat.git
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID
