@@ -46,11 +46,11 @@ export NOTEBOOK_DC_IMAGE = $(DOCKER_REPO)/notebook-dc$(DEV_LABEL)
 export NOTEBOOK_DC_VERSION = $(NOTEBOOK_DC_IMAGE):v1.0.117
 export NOTEBOOK_DC_LATEST = $(NOTEBOOK_DC_IMAGE):latest
 
-export NOTEBOOK_ALG_IMAGE = $(DOCKER_REPO)/notebook-alg$(DEV_LABEL)
-export NOTEBOOK_ALG_VERSION = $(NOTEBOOK_ALG_IMAGE):v1.0.117
-export NOTEBOOK_ALG_LATEST = $(NOTEBOOK_ALG_IMAGE):latest
+export NOTEBOOK_PAC_IMAGE = $(DOCKER_REPO)/notebook-pac$(DEV_LABEL)
+export NOTEBOOK_PAC_VERSION = $(NOTEBOOK_PAC_IMAGE):v1.0.117
+export NOTEBOOK_PAC_LATEST = $(NOTEBOOK_PAC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-alg
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -96,11 +96,11 @@ build-dc:
 	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
 	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
 
-build-alg:
+build-pac:
 	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
-		$(DOCKER_ARGS) -t $(NOTEBOOK_ALG_VERSION) -t $(NOTEBOOK_ALG_LATEST) -f Dockerfile-alg .
-	docker tag $(NOTEBOOK_ALG_IMAGE) $(NOTEBOOK_ALG_VERSION)
-	docker tag $(NOTEBOOK_ALG_IMAGE) $(NOTEBOOK_ALG_LATEST)
+		$(DOCKER_ARGS) -t $(NOTEBOOK_PAC_VERSION) -t $(NOTEBOOK_PAC_LATEST) -f Dockerfile-pac .
+	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
+	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 
 
 
@@ -119,11 +119,11 @@ tag:
 	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
 	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
-	-docker tag $(NOTEBOOK_ALG_IMAGE) $(NOTEBOOK_ALG_VERSION)
-	-docker tag $(NOTEBOOK_ALG_IMAGE) $(NOTEBOOK_ALG_LATEST)
+	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
+	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-alg
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -153,6 +153,6 @@ push-dc: build-dc
 	-docker push $(NOTEBOOK_DC_VERSION)
 	-docker push $(NOTEBOOK_DC_LATEST)
 
-push-alg: build-alg
-	-docker push $(NOTEBOOK_ALG_VERSION)
-	-docker push $(NOTEBOOK_ALG_LATEST)
+push-pac: build-pac
+	-docker push $(NOTEBOOK_PAC_VERSION)
+	-docker push $(NOTEBOOK_PAC_LATEST)
