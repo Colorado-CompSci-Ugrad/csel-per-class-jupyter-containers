@@ -7,12 +7,16 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 
 #
-# Add PuLP
+# Install Python SAT and LP solvers for Practical Algorithmic Complexity 
+#
+
+#
+# Add PuLP(LP Solver)
 #
 RUN pip install pulp 
 
 #
-# Add simple-sat
+# Add simple-sat(SAT Solver)
 #
 RUN cd /opt  && \
     git clone https://github.com/sahands/simple-sat.git
