@@ -19,7 +19,8 @@ RUN pip install pulp
 # Add simple-sat(SAT Solver)
 #
 RUN cd /opt  && \
-    git clone https://github.com/sahands/simple-sat.git
+    git clone https://github.com/sahands/simple-sat.git && \
+    ln -s /opt/simple-sat/src/sat.py /usr/bin/sat.py
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
