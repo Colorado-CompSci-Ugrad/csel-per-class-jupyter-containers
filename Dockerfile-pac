@@ -1,0 +1,29 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM ${BASE_CONTAINER}
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+#
+# Install Python SAT and LP solvers for Practical Algorithmic Complexity 
+#
+
+#
+# Add PuLP(LP Solver)
+#
+RUN pip install pulp 
+
+#
+# Add simple-sat(SAT Solver)
+#
+RUN cd /opt  && \
+    git clone https://github.com/sahands/simple-sat.git && \
+    ln -s /opt/simple-sat/src/sat.py /usr/bin/sat.py
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID

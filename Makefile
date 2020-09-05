@@ -46,7 +46,11 @@ export NOTEBOOK_DC_IMAGE = $(DOCKER_REPO)/notebook-dc$(DEV_LABEL)
 export NOTEBOOK_DC_VERSION = $(NOTEBOOK_DC_IMAGE):v1.0.117
 export NOTEBOOK_DC_LATEST = $(NOTEBOOK_DC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc
+export NOTEBOOK_PAC_IMAGE = $(DOCKER_REPO)/notebook-pac$(DEV_LABEL)
+export NOTEBOOK_PAC_VERSION = $(NOTEBOOK_PAC_IMAGE):v1.0.117
+export NOTEBOOK_PAC_LATEST = $(NOTEBOOK_PAC_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -92,6 +96,12 @@ build-dc:
 	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
 	docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
 
+build-pac:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_PAC_VERSION) -t $(NOTEBOOK_PAC_LATEST) -f Dockerfile-pac .
+	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
+	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
+
 
 
 tag:
@@ -109,9 +119,11 @@ tag:
 	-docker tag $(NOTEBOOK_CHAOS_IMAGE) $(NOTEBOOK_CHAOS_LATEST)
 	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_VERSION)
 	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
+	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
+	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -140,3 +152,7 @@ push-chaos: build-chaos
 push-dc: build-dc
 	-docker push $(NOTEBOOK_DC_VERSION)
 	-docker push $(NOTEBOOK_DC_LATEST)
+
+push-pac: build-pac
+	-docker push $(NOTEBOOK_PAC_VERSION)
+	-docker push $(NOTEBOOK_PAC_LATEST)
