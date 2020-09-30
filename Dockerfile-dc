@@ -123,7 +123,8 @@ RUN	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - && \
 	apt-get update && sudo apt-get -y install google-cloud-sdk kubectl 
 	
-RUN	pip install grpcio grpcio-tools
+RUN	pip install grpcio grpcio-tools && \
+	apt-get -y install libprotobuf-dev protobuf-compiler
 
 USER $NB_UID
 
