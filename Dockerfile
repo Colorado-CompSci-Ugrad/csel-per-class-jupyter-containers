@@ -72,7 +72,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/v3.7.2/code-server_3.7.2_amd64.deb && \
+	wget https://github.com/cdr/code-server/releases/download/v3.8.0/code-server_3.8.0_amd64.deb && \
 	dpkg -i ./code-server*.deb && \
 	rm -f ./code-server*.deb
 

@@ -10,7 +10,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION=3.0.0 \
+ENV APACHE_SPARK_VERSION=3.0.1 \
     HADOOP_VERSION=3.2
 
 RUN apt-get -y update && \
@@ -24,7 +24,7 @@ WORKDIR /tmp
 # hadolint ignore=SC2046
 RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz\?as_json | \
     python -c "import sys, json; content=json.load(sys.stdin); print(content['preferred']+content['path_info'])") && \
-    echo "BFE45406C67CC4AE00411AD18CC438F51E7D4B6F14EB61E7BF6B5450897C2E8D3AB020152657C0239F253735C263512FFABF538AC5B9FFFA38B8295736A9C387 *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
+    echo "e8b47c5b658e0fbc1e57eea06262649d8418ae2b2765e44da53aaf50094877d17297cc5f0b9b35df2ceef830f19aa31d7e56ead950bbe7f8830d6874f88cfc3c *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
     tar xzf "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" -C /usr/local --owner root --group root --no-same-owner && \
     rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
 
@@ -64,12 +64,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # R packages
+# from https://github.com/jupyter/docker-stacks/blob/master/all-spark-notebook/Dockerfile
 RUN conda install --quiet --yes \
-    'r-base=3.6.3' \
+    'r-base=4.0.3' \
     'r-ggplot2=3.3*' \
     'r-irkernel=1.1*' \
     'r-rcurl=1.98*' \
-    'r-sparklyr=1.2*' \
+    'r-sparklyr=1.5*' \
     && \
     conda clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
@@ -126,7 +127,7 @@ RUN	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 RUN	pip install grpcio grpcio-tools && \
 	apt-get -y install libprotobuf-dev protobuf-compiler libgrpc++-dev libgrpc-dev protobuf-compiler-grpc
 
-RUN	apt-get -y install rabbitmq
+#RUN	apt-get -y install rabbitmq-server
 
 USER $NB_UID
 
