@@ -124,7 +124,9 @@ RUN	echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.
 	apt-get update && sudo apt-get -y install google-cloud-sdk kubectl 
 	
 RUN	pip install grpcio grpcio-tools && \
-	apt-get -y install libprotobuf-dev protobuf-compiler
+	apt-get -y install libprotobuf-dev protobuf-compiler libgrpc++-dev libgrpc-dev protobuf-compiler-grpc
+
+RUN	apt-get -y install rabbitmq
 
 USER $NB_UID
 

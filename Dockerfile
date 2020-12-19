@@ -31,9 +31,9 @@ RUN apt-get update \
 
 RUN	$CONDA_DIR/bin/pip install nbgitpuller
 
-# RUN    jupyter labextension install  --no-build @jupyterlab/git && \
-#        $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
-#        jupyter serverextension enable --py --sys-prefix jupyterlab_git
+RUN    jupyter labextension install  --no-build @jupyterlab/git && \
+       $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
+       jupyter serverextension enable --py --sys-prefix jupyterlab_git
 
 #RUN 	$CONDA_DIR/bin/pip install jupyterlab_latex && \
 #	conda clean -afy && \
@@ -72,8 +72,9 @@ RUN	pip install networkx pygraphviz pydot pyyaml
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/3.4.1/code-server_3.4.1_amd64.deb && \
-	dpkg -i ./code-server*.deb
+	wget https://github.com/cdr/code-server/releases/download/v3.7.2/code-server_3.7.2_amd64.deb && \
+	dpkg -i ./code-server*.deb && \
+	rm -f ./code-server*.deb
 
 ##
 ## gtest
