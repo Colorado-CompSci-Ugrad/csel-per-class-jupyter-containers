@@ -5,7 +5,8 @@ GCE_PROJECT_NAME=$(shell gcloud config get-value project)
 ##
 GCE_PROJECT_NAME=emerald-agility-749
 DEV_LABEL=
-ifndef $(DOCKER_REPO)
+DOCKER_REPO=csr.csel.io/jhub
+ifndef DOCKER_REPO
 DOCKER_REPO = gcr.io/$(GCE_PROJECT_NAME)
 endif
 
@@ -53,7 +54,11 @@ export NOTEBOOK_PAC_IMAGE = $(DOCKER_REPO)/notebook-pac$(DEV_LABEL)
 export NOTEBOOK_PAC_VERSION = $(NOTEBOOK_PAC_IMAGE):v1.0.130
 export NOTEBOOK_PAC_LATEST = $(NOTEBOOK_PAC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac
+export NOTEBOOK_QT_IMAGE = $(DOCKER_REPO)/notebook-qt$(DEV_LABEL)
+export NOTEBOOK_QT_VERSION = $(NOTEBOOK_QT_IMAGE):v1.0.130
+export NOTEBOOK_QT_LATEST = $(NOTEBOOK_QT_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -107,6 +112,12 @@ build-pac:
 	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
 	docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 
+build-qt:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_QT_VERSION) -t $(NOTEBOOK_QT_LATEST) -f Dockerfile-qt .
+	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
+	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
+
 
 
 tag:
@@ -126,9 +137,11 @@ tag:
 	-docker tag $(NOTEBOOK_DC_IMAGE) $(NOTEBOOK_DC_LATEST)
 	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_VERSION)
 	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
+	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
+	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -161,3 +174,7 @@ push-dc: build-dc
 push-pac: build-pac
 	-docker push $(NOTEBOOK_PAC_VERSION)
 	-docker push $(NOTEBOOK_PAC_LATEST)
+
+push-qt: build-qt
+	-docker push $(NOTEBOOK_QT_VERSION)
+	-docker push $(NOTEBOOK_QT_LATEST)
