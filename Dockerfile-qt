@@ -1,0 +1,19 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM ${BASE_CONTAINER}
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+#
+# Dockefile for ECEN 5016 : Fundamentals of Quantum Eng
+#
+RUN pip install pytest cvxpy qutip qiskit 
+
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID
