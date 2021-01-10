@@ -11,17 +11,15 @@ ENV DEBIAN_FRONTEND noninteractive
 ## You need to enable CAP_SYS_ADMIN to use perf in Docker
 ## For more infomration, refer to https://blog.alicegoldfuss.com/enabling-perf-in-kubernetes/
 RUN apt-get update && \
-    apt-get -y install curl && \
+    apt-get -y install wget && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -o /tmp/TISEAN_3.0.0-linux-amd64.tar.gz https://www.pks.mpg.de/~tisean/TISEAN_3.0.0-linux-amd64.tar.gz && \
-    cd /tmp/ && tar -xvf /tmp/TISEAN_3.0.0-linux-amd64.tar.gz Tisean_3.0.0/bin --strip=1 && \
-    chmod -Rv +x /tmp/bin && \
-    mv /tmp/bin/* /usr/bin && \
-    rm -rv /tmp/TISEAN_3.0.0-linux-amd64.tar.gz && \
-    rm -rfv /tmp/bin
+RUN wget https://www.pks.mpg.de/~tisean/TISEAN_3.0.1.tar.gz -P /tmp && \
+    tar xf /tmp/TISEAN_3.0.1.tar.gz -C /tmp/ && \
+    cd /tmp/Tisean_3.0.1/ && ./configure --prefix=/usr/local/ && make && make install && \
+    rm -rf /tmp/Tisean_3.0.1 /tmp/TISEAN_3.0.1.tar.gz
 
-RUN rm -rf /home/jovyan  && \
+RUN rm -rf /home/jovyan && \
     mkdir /home/jovyan && \
     chown $NB_UID:$NB_GID /home/jovyan
 
