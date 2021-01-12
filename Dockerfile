@@ -92,6 +92,11 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##	$CONDA_DIR/bin/pip  install gdbgui
 
 ##
+## jupyter-archive
+##
+RUN conda install -c conda-forge nodejs jupyter-archive
+
+##
 ## Build jupyter lab extensions
 ##
 RUN	jupyter lab build --dev-build=False && jupyter lab clean

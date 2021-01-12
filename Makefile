@@ -13,52 +13,56 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:lab-2.2.9"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.130
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v1.0.134
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v1.0.130
-export NOTEBOOK_COMMON_BASE_AI=v1.0.130
-export NOTEBOOK_COMMON_BASE_PL=v1.0.130
+export NOTEBOOK_COMMON_BASE=v1.0.134
+export NOTEBOOK_COMMON_BASE_AI=v1.0.134
+export NOTEBOOK_COMMON_BASE_PL=v1.0.134
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
-export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.131
+export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):v1.0.134
 export NOTEBOOK_PL_LATEST = $(NOTEBOOK_PL_IMAGE):latest
 
 export ALMOND_VERSION=0.9.0
 export SCALA_VERSIONS="2.12.10 2.13.1"
 
 export NOTEBOOK_DB_IMAGE = $(DOCKER_REPO)/notebook-db$(DEV_LABEL)
-export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.130
+export NOTEBOOK_DB_VERSION = $(NOTEBOOK_DB_IMAGE):v1.0.134
 export NOTEBOOK_DB_LATEST = $(NOTEBOOK_DB_IMAGE):latest
 
 export NOTEBOOK_MPI_IMAGE = $(DOCKER_REPO)/notebook-mpi$(DEV_LABEL)
-export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.130
+export NOTEBOOK_MPI_VERSION = $(NOTEBOOK_MPI_IMAGE):v1.0.134
 export NOTEBOOK_MPI_LATEST = $(NOTEBOOK_MPI_IMAGE):latest
 
 export NOTEBOOK_AI_IMAGE = $(DOCKER_REPO)/notebook-ai$(DEV_LABEL)
-export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.130
+export NOTEBOOK_AI_VERSION = $(NOTEBOOK_AI_IMAGE):v1.0.134
 export NOTEBOOK_AI_LATEST = $(NOTEBOOK_AI_IMAGE):latest
 
 export NOTEBOOK_CHAOS_IMAGE = $(DOCKER_REPO)/notebook-chaos$(DEV_LABEL)
-export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.130
+export NOTEBOOK_CHAOS_VERSION = $(NOTEBOOK_CHAOS_IMAGE):v1.0.134
 export NOTEBOOK_CHAOS_LATEST = $(NOTEBOOK_CHAOS_IMAGE):latest
 
 export NOTEBOOK_DC_IMAGE = $(DOCKER_REPO)/notebook-dc$(DEV_LABEL)
-export NOTEBOOK_DC_VERSION = $(NOTEBOOK_DC_IMAGE):v1.0.130
+export NOTEBOOK_DC_VERSION = $(NOTEBOOK_DC_IMAGE):v1.0.134
 export NOTEBOOK_DC_LATEST = $(NOTEBOOK_DC_IMAGE):latest
 
 export NOTEBOOK_PAC_IMAGE = $(DOCKER_REPO)/notebook-pac$(DEV_LABEL)
-export NOTEBOOK_PAC_VERSION = $(NOTEBOOK_PAC_IMAGE):v1.0.130
+export NOTEBOOK_PAC_VERSION = $(NOTEBOOK_PAC_IMAGE):v1.0.134
 export NOTEBOOK_PAC_LATEST = $(NOTEBOOK_PAC_IMAGE):latest
 
 export NOTEBOOK_QT_IMAGE = $(DOCKER_REPO)/notebook-qt$(DEV_LABEL)
-export NOTEBOOK_QT_VERSION = $(NOTEBOOK_QT_IMAGE):v1.0.130
+export NOTEBOOK_QT_VERSION = $(NOTEBOOK_QT_IMAGE):v1.0.134
 export NOTEBOOK_QT_LATEST = $(NOTEBOOK_QT_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt
+export NOTEBOOK_INTROC_IMAGE = $(DOCKER_REPO)/notebook-introc$(DEV_LABEL)
+export NOTEBOOK_INTROC_VERSION = $(NOTEBOOK_INTROC_IMAGE):v1.0.134
+export NOTEBOOK_INTROC_LATEST = $(NOTEBOOK_INTROC_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-introc
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -118,6 +122,12 @@ build-qt:
 	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
 	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
 
+build-introc:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_INTROC_VERSION) -t $(NOTEBOOK_INTROC_LATEST) -f Dockerfile-introc .
+	docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_VERSION)
+	docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_LATEST)
+
 
 
 tag:
@@ -139,9 +149,11 @@ tag:
 	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
 	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
+	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_VERSION)
+	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-introc
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -178,3 +190,7 @@ push-pac: build-pac
 push-qt: build-qt
 	-docker push $(NOTEBOOK_QT_VERSION)
 	-docker push $(NOTEBOOK_QT_LATEST)
+
+push-introc: build-introc
+	-docker push $(NOTEBOOK_INTROC_VERSION)
+	-docker push $(NOTEBOOK_INTROC_LATEST)
