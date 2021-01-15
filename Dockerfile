@@ -16,6 +16,7 @@ RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
     				   ubuntu-minimal ubuntu-standard \
 				   ca-certificates-java \
+				   emacs-nox \
 				   libgtest-dev cmake-curses-gui \
 				   net-tools \
 				   openssh-client gdb \
