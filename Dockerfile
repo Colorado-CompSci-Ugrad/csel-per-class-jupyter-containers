@@ -23,10 +23,12 @@ RUN apt-get update \
 				   build-essential libc6-dev-i386 man \
 				   valgrind gcc-multilib g++-multilib libgmp-dev\
 				   software-properties-common python3-software-properties curl gnupg \
-		mysql-client apt-transport-https psmisc graphviz graphviz-dev vim ffmpeg \
+		mysql-client apt-transport-https psmisc graphviz graphviz-dev vim nano ffmpeg \
 		 fonts-dejavu \
 		 gfortran \
-		 googletest libopencv-dev clang-9 lldb-9 && \
+		 googletest libopencv-dev \
+		 clang lldb \
+		 rustc rust-gdb lldb python3-lldb && \
 	rm -rf /var/lib/apt/lists/*
 
 
