@@ -32,17 +32,7 @@ RUN apt-get update \
 	rm -rf /var/lib/apt/lists/*
 
 
-RUN	$CONDA_DIR/bin/pip install nbgitpuller
-
-RUN    jupyter labextension install  --no-build @jupyterlab/git && \
-       $CONDA_DIR/bin/pip install -U jupyterlab-git  &&\
-       jupyter serverextension enable --py --sys-prefix jupyterlab_git
-
-#RUN 	$CONDA_DIR/bin/pip install jupyterlab_latex && \
-#	conda clean -afy && \
-#	jupyter labextension install @jupyterlab/latex && \
-
-RUN	jupyter labextension install --no-build jupyterlab-drawio
+RUN    $CONDA_DIR/bin/pip install -U nbgitpuller jupyterlab-git jupyterlab_latex jupyterlab-drawio
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
@@ -75,7 +65,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/v3.8.0/code-server_3.8.0_amd64.deb && \
+	wget https://github.com/cdr/code-server/releases/download/v3.10.0/code-server_3.10.0_amd64.deb && \
 	dpkg -i ./code-server*.deb && \
 	rm -f ./code-server*.deb
 
