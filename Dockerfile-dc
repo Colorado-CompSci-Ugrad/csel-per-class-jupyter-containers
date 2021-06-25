@@ -10,8 +10,15 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 USER root
 
 # Spark dependencies
-ENV APACHE_SPARK_VERSION=3.0.1 \
-    HADOOP_VERSION=3.2
+# Default values can be overridden at build time
+# (ARGS are in lower case to distinguish them from ENV)
+ARG spark_version="3.1.2"
+ARG hadoop_version="3.2"
+ARG spark_checksum="2385CB772F21B014CE2ABD6B8F5E815721580D6E8BC42A26D70BBCDDA8D303D886A6F12B36D40F6971B5547B70FAE62B5A96146F0421CB93D4E51491308EF5D5"
+ARG openjdk_version="11"
+
+ENV APACHE_SPARK_VERSION="${spark_version}" \
+    HADOOP_VERSION="${hadoop_version}"
 
 RUN apt-get -y update && \
     apt-get install --no-install-recommends -y openjdk-8-jdk-headless ca-certificates-java && \
@@ -24,7 +31,7 @@ WORKDIR /tmp
 # hadolint ignore=SC2046
 RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz\?as_json | \
     python -c "import sys, json; content=json.load(sys.stdin); print(content['preferred']+content['path_info'])") && \
-    echo "e8b47c5b658e0fbc1e57eea06262649d8418ae2b2765e44da53aaf50094877d17297cc5f0b9b35df2ceef830f19aa31d7e56ead950bbe7f8830d6874f88cfc3c *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
+    echo "${spark_checksum} *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
     tar xzf "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" -C /usr/local --owner root --group root --no-same-owner && \
     rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
 
@@ -37,11 +44,18 @@ ENV PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip \
     SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info" \
     PATH=$PATH:$SPARK_HOME/bin
 
+# Fix Spark installation for Java 11 and Apache Arrow library
+# see: https://github.com/apache/spark/pull/27356, https://spark.apache.org/docs/latest/#downloading
+RUN cp -p "${SPARK_HOME}/conf/spark-defaults.conf.template" "${SPARK_HOME}/conf/spark-defaults.conf" && \
+    echo 'spark.driver.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf" && \
+    echo 'spark.executor.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf"
+
 USER $NB_UID
 
 # Install pyarrow
-RUN conda install --quiet -y 'pyarrow' && \
-    conda clean --all -f -y && \
+RUN mamba install --quiet --yes \
+    'pyarrow=4.0.*' && \
+    mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
@@ -63,22 +77,20 @@ RUN apt-get update && \
     gcc && \
     rm -rf /var/lib/apt/lists/*
 
-# R packages
-# from https://github.com/jupyter/docker-stacks/blob/master/all-spark-notebook/Dockerfile
-RUN conda install --quiet --yes \
-    'r-base=4.0.3' \
+# R packages including IRKernel which gets installed globally.
+RUN mamba install --quiet --yes \
+    'r-base=4.1.0' \
     'r-ggplot2=3.3*' \
-    'r-irkernel=1.1*' \
+    'r-irkernel=1.2*' \
     'r-rcurl=1.98*' \
-    'r-sparklyr=1.5*' \
-    && \
-    conda clean --all -f -y && \
+    'r-sparklyr=1.7*' && \
+    mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
 
 # Spylon-kernel
-RUN conda install --quiet --yes 'spylon-kernel=0.4*' && \
-    conda clean --all -f -y && \
+RUN mamba install --quiet --yes 'spylon-kernel=0.4*' && \
+    mamba clean --all -f -y && \
     python -m spylon_kernel install --sys-prefix && \
     rm -rf "/home/${NB_USER}/.local" && \
     fix-permissions "${CONDA_DIR}" && \
@@ -88,19 +100,21 @@ RUN conda install --quiet --yes 'spylon-kernel=0.4*' && \
 ## Install hadoop
 ##
 
-ENV APACHE_HADOOP_VERSION=3.2.1
+ENV APACHE_HADOOP_VERSION=3.2.2
+ARG hadoop_checksum="054753301927d31a69b80be3e754fd330312f0b1047bcfa4ab978cdce18319ed912983e6022744d8f0c8765b98c87256eb1c3017979db1341d583d2cee22d029"
+
 RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/hadoop/core/hadoop-${APACHE_HADOOP_VERSION}/hadoop-${APACHE_HADOOP_VERSION}.tar.gz\?as_json | \
     python -c "import sys, json; content=json.load(sys.stdin); print(content['preferred']+content['path_info'])")
 
-RUN echo "d62709c3d7144fcaafc60e18d0fa03d7d477cc813e45526f3646030cd87dbf010aeccf3f4ce795b57b08d2884b3a55f91fe9d74ac144992d2dfe444a4bbf34ee *hadoop-${APACHE_HADOOP_VERSION}.tar.gz" | sha512sum -c - && \
+RUN echo "${hadoop_checksum} *hadoop-${APACHE_HADOOP_VERSION}.tar.gz" | sha512sum -c - && \
     tar xzf "hadoop-${APACHE_HADOOP_VERSION}.tar.gz" -C /usr/local --owner $NB_UID --group $NB_GID --no-same-owner && \
     rm "hadoop-${APACHE_HADOOP_VERSION}.tar.gz" && \
-    fix-permissions "/usr/local/hadoop-3.2.1"
+    fix-permissions "/usr/local/hadoop-${APACHE_HADOOP_VERSION}"
 
 ##
 ## Configure HADOOP
 ##
-ENV	 HADOOP_HOME=/usr/local/hadoop-3.2.1
+ENV	 HADOOP_HOME=/usr/local/hadoop-${APACHE_HADOOP_VERSION}
 ENV	 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
 	 HADOOP_INSTALL=$HADOOP_HOME \
 	 HADOOP_MAPRED_HOME=$HADOOP_HOME \
@@ -114,7 +128,7 @@ ENV	 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
 	 PATH=$PATH:$HADOOP_HOME/bin
 
 RUN	 hdfs namenode -format && \
-	 fix-permissions "/usr/local/hadoop-3.2.1"
+	 fix-permissions "/usr/local/hadoop-3.2.2"
 
 ##
 ## Install Google cloud utilities -- see https://cloud.google.com/sdk/docs/quickstart
