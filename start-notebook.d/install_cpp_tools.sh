@@ -1,5 +1,6 @@
 #!/bin/sh
 WANT="1.4.1"
+cd /tmp
 code-server --list-extensions --show-versions | grep "ms-vscode.cpptools@$WANT"
 if [ $? -eq 0 ]; then
   file ~/.local/share/code-server/extensions/ms-vscode.cpptools-$WANT/bin/cpptools | grep x86-64
