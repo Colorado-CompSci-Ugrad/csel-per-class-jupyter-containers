@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
-        ir julia-1.5 xcpp17 
+        ir julia-1.6 xcpp17 
 
 RUN jupyter labextension uninstall jupyterlab-drawio
 
