@@ -95,7 +95,7 @@ RUN conda install -c conda-forge nodejs jupyter-archive
 RUN	jupyter lab build --dev-build=False && jupyter lab clean
 
 COPY	start-notebook.d /usr/local/bin/start-notebook.d
-COPY	start-notebook.d /usr/local/bin/before-notebook.d
+#COPY	start-notebook.d /usr/local/bin/before-notebook.d
 
 #
 # Prevent core dumps, get rid of jovyan which will be over-mounted
