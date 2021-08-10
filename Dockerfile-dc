@@ -141,6 +141,13 @@ RUN	pip install grpcio grpcio-tools && \
 
 #RUN	apt-get -y install rabbitmq-server
 
+##
+## sql magic
+##
+RUN	mamba install -c conda-forge  \
+	conda-forge::psycopg2 conda-forge::mysqlclient conda-forge::ipython-sql && \
+	mamba clean -afy 
+
 USER $NB_UID
 
 

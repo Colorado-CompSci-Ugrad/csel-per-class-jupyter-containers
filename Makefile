@@ -10,15 +10,15 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.0"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v6.4.0.1
+export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):v6.4.0.3
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.4.0.1
-export NOTEBOOK_COMMON_BASE_AI=v6.4.0.1
-export NOTEBOOK_COMMON_BASE_PL=v6.4.0.1
+export NOTEBOOK_COMMON_BASE=v6.4.0.2
+export NOTEBOOK_COMMON_BASE_AI=v6.4.0.2
+export NOTEBOOK_COMMON_BASE_PL=v6.4.0.2
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
