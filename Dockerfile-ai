@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Add material for AI classes
 #
 
-RUN	$CONDA_DIR/bin/mamba install scikit-learn bqplot 
+RUN	$CONDA_DIR/bin/mamba install --quiet --yes scikit-learn bqplot 
 
 ##
 ## Installation crafted by looking at their installScripts/JupyterhubInstall.sh
