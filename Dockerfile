@@ -65,7 +65,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/v3.10.2/code-server_3.10.2_amd64.deb && \
+	wget https://github.com/cdr/code-server/releases/download/v3.11.1/code-server_3.11.1_amd64.deb && \
 	dpkg -i ./code-server*.deb && \
 	rm -f ./code-server*.deb
 
@@ -83,6 +83,11 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##	       --extra-index-url https://pypi.org/simple jupyter-gdbgui-proxy==1.0b3 && \
 ##	$CONDA_DIR/bin/pip  install gdbgui
+
+##
+## Real time collaboration
+##
+RUN	pip install jupyterlab-link-share
 
 ##
 ## jupyter-archive
