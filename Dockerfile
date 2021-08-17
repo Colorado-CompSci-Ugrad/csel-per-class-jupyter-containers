@@ -85,9 +85,9 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##	$CONDA_DIR/bin/pip  install gdbgui
 
 ##
-## Real time collaboration
+## Real time collaboration -- works in the container but not with jupyterhub/z2jh yet
 ##
-RUN	pip install jupyterlab-link-share
+## RUN	pip install jupyterlab-link-share
 
 ##
 ## jupyter-archive
