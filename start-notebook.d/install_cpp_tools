@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-WANT="1.4.1"
+WANT="1.5.1"
 cd /tmp
 code-server --list-extensions --show-versions | grep "ms-vscode.cpptools@$WANT"
 if [ $? -eq 0 ]; then
