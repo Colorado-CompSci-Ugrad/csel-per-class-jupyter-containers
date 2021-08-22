@@ -1,0 +1,26 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+ENV DEBIAN_FRONTEND noninteractive
+
+##
+## Install verilator dependencies
+RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+     				    git perl python3 make build-essential libfl2 libfl-dev zlibc zlib1g zlib1g-dev \
+     				    ccache libgoogle-perftools-dev numactl perl-doc autoconf flex bison && \
+                                    rm -rf /var/lib/apt/lists/*
+# Build
+RUN git -c advice.detachedHead=false clone --single-branch --depth=1 --recursive -b v4.036 \
+     https://github.com/verilator/verilator.git  /tmp/verilator && \
+     cd /tmp/verilator && autoconf && unset VERILATOR_ROOT && ./configure && make && make install
+
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID
