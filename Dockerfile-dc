@@ -107,6 +107,10 @@ RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/hadoop/core/hadoop
 RUN echo "${hadoop_checksum} *hadoop-${APACHE_HADOOP_VERSION}.tar.gz" | sha512sum -c - && \
     tar xzf "hadoop-${APACHE_HADOOP_VERSION}.tar.gz" -C /usr/local --owner $NB_UID --group $NB_GID --no-same-owner && \
     rm "hadoop-${APACHE_HADOOP_VERSION}.tar.gz" && \
+    ln -s "/usr/local/hadoop-${APACHE_HADOOP_VERSION}" "/usr/local/hadoop" && \
+    ln -s /usr/local/hadoop/lib/native/* /usr/lib && \
+    ldconfig && \
+    ldconfig -p && \
     fix-permissions "/usr/local/hadoop-${APACHE_HADOOP_VERSION}"
 
 ##
