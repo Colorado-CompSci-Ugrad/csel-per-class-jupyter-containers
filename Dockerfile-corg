@@ -11,13 +11,18 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
      DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
      				    git perl python3 make build-essential libfl2 libfl-dev zlibc zlib1g zlib1g-dev \
-     				    ccache libgoogle-perftools-dev numactl perl-doc autoconf flex bison && \
+     				    ccache libgoogle-perftools-dev numactl perl-doc autoconf flex bison \
+                                    autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk \
+                                    bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev && \
                                     rm -rf /var/lib/apt/lists/*
 # Build
 RUN git -c advice.detachedHead=false clone --single-branch --depth=1 --recursive -b v4.036 \
      https://github.com/verilator/verilator.git  /tmp/verilator && \
-     cd /tmp/verilator && autoconf && unset VERILATOR_ROOT && ./configure && make && make install
+     cd /tmp/verilator && autoconf && unset VERILATOR_ROOT && ./configure && make -j 4 && make install && rm -rf /tmp/verilator
 
+# Build risc cross compiler
+RUN git clone https://github.com/riscv/riscv-gnu-toolchain /tmp/riscv-gnu-toolchain && \
+     cd /tmp/riscv-gnu-toolchain  &&  ./configure --prefix=/opt/riscv --with-arch=rv32i && make -j4 && rm -rf /tmp/riscv-gnu-toolchain
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
