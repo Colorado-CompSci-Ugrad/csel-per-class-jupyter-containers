@@ -1,0 +1,37 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+##
+## Install Julia packages commonly used
+##
+
+USER root
+
+RUN julia -e 'import Pkg; Pkg.update()' && \
+    julia -e 'import Pkg; Pkg.add("Plots")' && \
+    julia -e 'import Pkg; Pkg.add("Zygote")' && \
+    julia -e 'import Pkg; Pkg.add("ForwardDiff")' && \
+    julia -e 'import Pkg; Pkg.add("Symbolics")' && \
+    julia -e 'import Pkg; Pkg.add("SpecialMatrices")' && \
+    chmod -R go+rx "${CONDA_DIR}/share/jupyter" && \
+    rm -rf "${HOME}/.local" && \
+    chown -R $NB_UID.$NB_GID "${JULIA_PKGDIR}" 
+
+ARG OLD_DEPOT_PATH=${JULIA_DEPOT_PATH}
+ENV CURR_JULIA_VERSION="v1.6"
+
+ENV JULIA_DEPOT_PATH=:${OLD_DEPOT_PATH} \
+    JULIA_LOAD_PATH=:${OLD_DEPOT_PATH}/environments/${CURR_JULIA_VERSION} \
+    JULIA_NUM_PRECOMPILE_TASKS=2 
+
+#COPY scripts/unset_var.sh /usr/local/bin/start-notebook.d/unset_var.sh
+COPY scripts/create_dummy_project.sh /usr/local/bin/start-notebook.d/create_dummy_project.sh
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID

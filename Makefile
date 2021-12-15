@@ -10,16 +10,16 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.4.2.3
+export BASE_VERSION_NUMBER=v6.4.2.4
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.4.2.2
-export NOTEBOOK_COMMON_BASE_AI=v6.4.2.2
-export NOTEBOOK_COMMON_BASE_PL=v6.4.2.2
+export NOTEBOOK_COMMON_BASE=v6.4.2.4
+export NOTEBOOK_COMMON_BASE_AI=v6.4.2.4
+export NOTEBOOK_COMMON_BASE_PL=v6.4.2.4
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
@@ -60,7 +60,15 @@ export NOTEBOOK_INTROC_IMAGE = $(DOCKER_REPO)/notebook-introc$(DEV_LABEL)
 export NOTEBOOK_INTROC_VERSION = $(NOTEBOOK_INTROC_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_INTROC_LATEST = $(NOTEBOOK_INTROC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-introc
+export NOTEBOOK_CORG_IMAGE = $(DOCKER_REPO)/notebook-corg$(DEV_LABEL)
+export NOTEBOOK_CORG_VERSION = $(NOTEBOOK_CORG_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_CORG_LATEST = $(NOTEBOOK_CORG_IMAGE):latest
+
+export NOTEBOOK_NS_IMAGE = $(DOCKER_REPO)/notebook-ns$(DEV_LABEL)
+export NOTEBOOK_NS_VERSION = $(NOTEBOOK_NS_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_NS_LATEST = $(NOTEBOOK_NS_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-introc build-corg build-ns
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -126,6 +134,17 @@ build-introc:
 	docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_VERSION)
 	docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_LATEST)
 
+build-corg:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_CORG_VERSION) -t $(NOTEBOOK_CORG_LATEST) -f Dockerfile-corg .
+	docker tag $(NOTEBOOK_CORG_IMAGE) $(NOTEBOOK_CORG_VERSION)
+	docker tag $(NOTEBOOK_CORG_IMAGE) $(NOTEBOOK_CORG_LATEST)
+
+build-ns:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_NS_VERSION) -t $(NOTEBOOK_NS_LATEST) -f Dockerfile-ns .
+	docker tag $(NOTEBOOK_NS_IMAGE) $(NOTEBOOK_NS_VERSION)
+	docker tag $(NOTEBOOK_NS_IMAGE) $(NOTEBOOK_NS_LATEST)
 
 
 tag:
@@ -149,9 +168,13 @@ tag:
 	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
 	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_VERSION)
 	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_LATEST)
+	-docker tag $(NOTEBOOK_CORG_IMAGE) $(NOTEBOOK_CORG_VERSION)
+	-docker tag $(NOTEBOOK_CORG_IMAGE) $(NOTEBOOK_CORG_LATEST)
+	-docker tag $(NOTEBOOK_NS_IMAGE) $(NOTEBOOK_NS_VERSION)
+	-docker tag $(NOTEBOOK_NS_IMAGE) $(NOTEBOOK_NS_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-introc
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-introc push-corg push-ns
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -192,3 +215,11 @@ push-qt: build-qt
 push-introc: build-introc
 	-docker push $(NOTEBOOK_INTROC_VERSION)
 	-docker push $(NOTEBOOK_INTROC_LATEST)
+
+push-corg: build-corg
+	-docker push $(NOTEBOOK_CORG_VERSION)
+	-docker push $(NOTEBOOK_CORG_LATEST)
+
+push-ns: build-ns
+	-docker push $(NOTEBOOK_NS_VERSION)
+	-docker push $(NOTEBOOK_NS_LATEST)
