@@ -32,7 +32,7 @@ RUN apt-get update \
 	rm -rf /var/lib/apt/lists/*
 
 
-RUN    $CONDA_DIR/bin/pip install -U nbgitpuller jupyterlab-git jupyterlab_latex jupyterlab-drawio
+RUN    $CONDA_DIR/bin/pip install -U nbgitpuller jupyterlab-git jupyterlab_latex jupyterlab-drawio jupyterlab-link-share
 
 RUN	curl https://cli-assets.heroku.com/install.sh | sh
 
