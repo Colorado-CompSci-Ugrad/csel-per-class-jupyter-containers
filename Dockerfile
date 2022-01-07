@@ -40,13 +40,14 @@ RUN     conda install -c conda-forge --freeze-installed \
               libiconv python-language-server flake8 autopep8 \
 	      altair vega_datasets \
 	      bokeh datashader holoviews \
-	      xeus-cling \
               jupyter-server-proxy cppcheck && \
 	jupyter labextension install --no-build @jupyterlab/server-proxy && \
-	echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y xcpp11 xcpp14 && \
         conda clean -afy
 
-RUN	pip install networkx pygraphviz pydot pyyaml
+#
+# openpyxl is for pandas.read_excel
+#
+RUN	pip install networkx pygraphviz pydot pyyaml openpyxl
 
 #RUN     (cd /tmp && \
 #        git clone https://github.com/jupyterhub/jupyter-server-proxy && \
