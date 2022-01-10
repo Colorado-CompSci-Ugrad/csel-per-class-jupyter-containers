@@ -56,6 +56,10 @@ export NOTEBOOK_QT_IMAGE = $(DOCKER_REPO)/notebook-qt$(DEV_LABEL)
 export NOTEBOOK_QT_VERSION = $(NOTEBOOK_QT_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_QT_LATEST = $(NOTEBOOK_QT_IMAGE):latest
 
+export NOTEBOOK_QCS_IMAGE = $(DOCKER_REPO)/notebook-qcs$(DEV_LABEL)
+export NOTEBOOK_QCS_VERSION = $(NOTEBOOK_QCS_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_QCS_LATEST = $(NOTEBOOK_QCS_IMAGE):latest
+
 export NOTEBOOK_INTROC_IMAGE = $(DOCKER_REPO)/notebook-introc$(DEV_LABEL)
 export NOTEBOOK_INTROC_VERSION = $(NOTEBOOK_INTROC_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_INTROC_LATEST = $(NOTEBOOK_INTROC_IMAGE):latest
@@ -72,7 +76,7 @@ export NOTEBOOK_CC_IMAGE = $(DOCKER_REPO)/notebook-cc$(DEV_LABEL)
 export NOTEBOOK_CC_VERSION = $(NOTEBOOK_CC_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_CC_LATEST = $(NOTEBOOK_CC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-introc build-corg build-ns build-cc
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -132,6 +136,12 @@ build-qt:
 	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
 	docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
 
+build-qcs:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_QCS_VERSION) -t $(NOTEBOOK_QCS_LATEST) -f Dockerfile-qt .
+	docker tag $(NOTEBOOK_QCS_IMAGE) $(NOTEBOOK_QCS_VERSION)
+	docker tag $(NOTEBOOK_QCS_IMAGE) $(NOTEBOOK_QCS_LATEST)
+
 build-introc:
 	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
 		$(DOCKER_ARGS) -t $(NOTEBOOK_INTROC_VERSION) -t $(NOTEBOOK_INTROC_LATEST) -f Dockerfile-introc .
@@ -176,6 +186,8 @@ tag:
 	-docker tag $(NOTEBOOK_PAC_IMAGE) $(NOTEBOOK_PAC_LATEST)
 	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_VERSION)
 	-docker tag $(NOTEBOOK_QT_IMAGE) $(NOTEBOOK_QT_LATEST)
+	-docker tag $(NOTEBOOK_QCS_IMAGE) $(NOTEBOOK_QCS_VERSION)
+	-docker tag $(NOTEBOOK_QCS_IMAGE) $(NOTEBOOK_QCS_LATEST)
 	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_VERSION)
 	-docker tag $(NOTEBOOK_INTROC_IMAGE) $(NOTEBOOK_INTROC_LATEST)
 	-docker tag $(NOTEBOOK_CORG_IMAGE) $(NOTEBOOK_CORG_VERSION)
@@ -186,7 +198,7 @@ tag:
 	-docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-introc push-corg push-ns push-cc
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -223,6 +235,10 @@ push-pac: build-pac
 push-qt: build-qt
 	-docker push $(NOTEBOOK_QT_VERSION)
 	-docker push $(NOTEBOOK_QT_LATEST)
+
+push-qcs: build-qcs
+	-docker push $(NOTEBOOK_QCS_VERSION)
+	-docker push $(NOTEBOOK_QCS_LATEST)
 
 push-introc: build-introc
 	-docker push $(NOTEBOOK_INTROC_VERSION)
