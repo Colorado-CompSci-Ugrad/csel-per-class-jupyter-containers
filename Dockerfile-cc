@@ -10,11 +10,15 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN cd /tmp && git clone https://github.com/dabeaz/ply.git && cd ply && python install.py && \
      rm -rf /tmp/ply
 
+# Install pytest
+RUN pip install pytest
+
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
         ir julia-1.6 # xcpp17 
 
-RUN jupyter labextension uninstall jupyterlab-drawio
+# Remove drawio
+RUN pip uninstall -y jupyterlab-drawio
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
