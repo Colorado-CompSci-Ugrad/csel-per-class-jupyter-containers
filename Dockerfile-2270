@@ -1,0 +1,104 @@
+#
+# You need to change the BASE_CONTAINER in the Makefile, not here
+#
+ARG BASE_CONTAINER=this/is-a-place-holder
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+#############################################################################
+## CU specific for C / C++ focused classes
+## We eliminate most Conda bits to avoid having any alternate C/C++
+## compiler installed in /opt
+#############################################################################
+
+USER root
+
+##
+## Note that we need to add 'git' in addition to things added in Dockerfile
+## I assume some other docker-stacks images brings that in.
+##
+
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    				   ubuntu-minimal ubuntu-standard \
+				   ca-certificates-java \
+				   emacs-nox \
+				   libgtest-dev cmake-curses-gui \
+				   net-tools \
+				   openssh-client gdb \
+				   build-essential libc6-dev-i386 man \
+				   valgrind gcc-multilib g++-multilib libgmp-dev\
+				   software-properties-common python3-software-properties curl gnupg \
+		mysql-client apt-transport-https psmisc graphviz graphviz-dev vim nano ffmpeg \
+		 fonts-dejavu \
+		 gfortran \
+		 googletest libopencv-dev \
+		 clang lldb \
+		 rustc rust-gdb lldb python3-lldb && \
+	rm -rf /var/lib/apt/lists/*
+
+##
+## Things that are in the normal Dockerfile but missing from base-notebook
+##
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+		 git git-man dictionaries-common linux-libc-dev:amd64 nano-tiny netcat \
+		 preview-latex-style tex-common \
+		 texlive-binaries texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended \
+		 texlive-pictures texlive-plain-generic texlive-xetex \
+		 unzip xxd \
+		 && \
+	rm -rf /var/lib/apt/lists/*
+
+
+RUN    $CONDA_DIR/bin/pip install -U nbgitpuller jupyterlab-git jupyterlab_latex jupyterlab-drawio jupyterlab-link-share
+
+RUN     conda install -c conda-forge --freeze-installed \
+              jupyter-server-proxy cppcheck && \
+	jupyter labextension install --no-build @jupyterlab/server-proxy && \
+        conda clean -afy
+
+RUN	cd /opt && \
+	wget https://github.com/cdr/code-server/releases/download/v3.11.1/code-server_3.11.1_amd64.deb && \
+	dpkg -i ./code-server*.deb && \
+	rm -f ./code-server*.deb
+
+##
+## gtest
+##
+RUN	cd /usr/src/gtest && \
+	cmake CMakeLists.txt && \
+	make && \
+	cp lib/*.a /usr/lib
+
+RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
+	       --extra-index-url https://pypi.org/simple jupyter-codeserver-proxy==1.0b4
+
+##
+## jupyter-archive
+##
+RUN conda install -c conda-forge nodejs jupyter-archive
+
+##
+## Build jupyter lab extensions
+##
+RUN	jupyter lab build --dev-build=False && jupyter lab clean
+
+COPY	start-notebook.d /usr/local/bin/start-notebook.d
+#COPY	start-notebook.d /usr/local/bin/before-notebook.d
+
+# Remove python kernel
+# We need to set ensure_kernel_native false or it shows up anyway
+# 
+RUN	 echo "c.KernelSpecManager.ensure_native_kernel = False" >> /etc/jupyter/jupyter_notebook_config.py \
+	 &&  echo "c.KernelSpecManager.ensure_native_kernel = False" >> /etc/jupyter/jupyter_server_config.py \
+         && echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y python3
+#
+# Prevent core dumps, get rid of jovyan which will be over-mounted
+#
+RUN	rm -rf /home/jovyan  && \
+	mkdir /home/jovyan && \
+	chown $NB_UID:$NB_GID /home/jovyan
+
+USER	$NB_UID

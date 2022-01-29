@@ -8,11 +8,14 @@ DOCKER_REPO=csr.csel.io/jhub
 endif
 
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.2"
+export NOTEBOOK_2270_BASE = "jupyter/base-notebook:notebook-6.4.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
 export BASE_VERSION_NUMBER=v6.4.2.5
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
+
+export 2270_VERSION_NUMBER=v6.4.2.5.3
 
 #
 # The base version from which most other images are built
@@ -20,6 +23,10 @@ export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 export NOTEBOOK_COMMON_BASE=v6.4.2.5
 export NOTEBOOK_COMMON_BASE_AI=v6.4.2.5
 export NOTEBOOK_COMMON_BASE_PL=v6.4.2.5
+
+export NOTEBOOK_2270_IMAGE = $(DOCKER_REPO)/notebook-2270$(DEV_LABEL)
+export NOTEBOOK_2270_VERSION = $(NOTEBOOK_2270_IMAGE):$(2270_VERSION_NUMBER)
+export NOTEBOOK_2270_LATEST = $(NOTEBOOK_2270_IMAGE):latest
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
@@ -85,6 +92,15 @@ build-notebook:
 		-t $(NOTEBOOK_VERSION) -t $(NOTEBOOK_LATEST) -f Dockerfile .
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
+
+##
+## Note that the 2270 contianer does not build on top of 'notebook'
+##
+build-2270:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_2270_BASE)" \
+		-t $(NOTEBOOK_2270_VERSION) -t $(NOTEBOOK_2270_LATEST) -f Dockerfile-2270 .
+	docker tag $(NOTEBOOK_2270_IMAGE) $(NOTEBOOK_2270_VERSION)
+	docker tag $(NOTEBOOK_2270_IMAGE) $(NOTEBOOK_2270_LATEST)
 
 build-pl:
 	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_AI)" \
@@ -203,6 +219,10 @@ push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
 	-docker push $(NOTEBOOK_LATEST)
+
+push-2270: build-2270
+	-docker push $(NOTEBOOK_2270_VERSION)
+	-docker push $(NOTEBOOK_2270_LATEST)
 
 push-pl: build-pl
 	-docker push $(NOTEBOOK_PL_VERSION)
