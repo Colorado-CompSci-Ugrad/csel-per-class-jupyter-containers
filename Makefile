@@ -87,7 +87,7 @@ build-notebook:
 	docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
 
 build-pl:
-	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_AI)" \
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)" \
 		--build-arg ALMOND_VERSION=$(ALMOND_VERSION) \
 		--build-arg SCALA_VERSIONS=$(SCALA_VERSIONS) \
 		$(DOCKER_ARGS) -t $(NOTEBOOK_PL_VERSION) -t $(NOTEBOOK_PL_LATEST) -f Dockerfile-pl .
