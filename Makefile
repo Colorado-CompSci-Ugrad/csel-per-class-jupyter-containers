@@ -10,7 +10,7 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.4.2.6
+export BASE_VERSION_NUMBER=v6.4.2.7
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
@@ -20,6 +20,8 @@ export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 export NOTEBOOK_COMMON_BASE=v6.4.2.6
 export NOTEBOOK_COMMON_BASE_AI=v6.4.2.6
 export NOTEBOOK_COMMON_BASE_PL=v6.4.2.6
+
+export WEBOTS_VERSION_NUMBER=v6.4.2.7
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
@@ -77,7 +79,7 @@ export NOTEBOOK_CC_VERSION = $(NOTEBOOK_CC_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_CC_LATEST = $(NOTEBOOK_CC_IMAGE):latest
 
 export NOTEBOOK_WEBOTS_IMAGE = $(DOCKER_REPO)/notebook-webots$(DEV_LABEL)
-export NOTEBOOK_WEBOTS_VERSION = $(NOTEBOOK_WEBOTS_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_WEBOTS_VERSION = $(NOTEBOOK_WEBOTS_IMAGE):$(WEBOTS_VERSION_NUMBER)
 export NOTEBOOK_WEBOTS_LATEST = $(NOTEBOOK_WEBOTS_IMAGE):latest
 
 build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc
