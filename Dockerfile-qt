@@ -11,6 +11,15 @@ ENV DEBIAN_FRONTEND noninteractive
 #
 RUN pip install pytest cvxpy qutip qiskit networkx noisyopt
 
+# Install qiskit-textbook for additional qiskit helpers
+RUN pip install git+https://github.com/qiskit-community/qiskit-textbook.git#subdirectory=qiskit-textbook-src
+
+# Install package for nice matplotlib circuit drawing
+RUN pip install pylatexenc
+
+# The current version is old and causing errors
+RUN pip install --upgrade matplotlib
+
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
