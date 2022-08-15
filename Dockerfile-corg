@@ -10,15 +10,20 @@ ENV DEBIAN_FRONTEND noninteractive
 ## Install verilator dependencies
 RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
      DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-     				    git perl python3 make build-essential libfl2 libfl-dev zlibc zlib1g zlib1g-dev \
+     				    git perl python3 make build-essential libfl2 libfl-dev zlib1g zlib1g-dev \
      				    ccache libgoogle-perftools-dev numactl perl-doc autoconf flex bison \
                                     autoconf automake autotools-dev curl python3 libmpc-dev libmpfr-dev libgmp-dev gawk \
                                     bison flex texinfo gperf libtool patchutils bc zlib1g-dev libexpat-dev && \
                                     rm -rf /var/lib/apt/lists/*
 # Build
-RUN git -c advice.detachedHead=false clone --single-branch --depth=1 --recursive -b v4.036 \
-     https://github.com/verilator/verilator.git  /tmp/verilator && \
-     cd /tmp/verilator && autoconf && unset VERILATOR_ROOT && ./configure && make -j 4 && make install && rm -rf /tmp/verilator
+#RUN git -c advice.detachedHead=false clone --single-branch --depth=1 --recursive -b v4.036 \
+#     https://github.com/verilator/verilator.git  /tmp/verilator && \
+#     cd /tmp/verilator && autoconf && unset VERILATOR_ROOT && ./configure && make -j 4 && make install && rm -rf /tmp/verilator
+RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+     				    verilator && \
+                                    rm -rf /var/lib/apt/lists/*
+
 
 # Build risc cross compiler
 RUN git clone https://github.com/riscv/riscv-gnu-toolchain /tmp/riscv-gnu-toolchain && \

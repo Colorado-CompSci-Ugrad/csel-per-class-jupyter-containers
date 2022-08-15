@@ -51,9 +51,9 @@ RUN   sh -c '(echo "#!/usr/bin/env sh" && curl -L https://github.com/com-lihaoyi
 
 RUN 	./pl-install-kernels.sh && \
 	rm pl-install-kernels.sh && \
-	rm -rf .ivy2 && \
-	ipython kernelspec list
-	
+	rm -rf .ivy2 && \	
+	jupyter kernelspec list	
+
 RUN     ls -lR /home/jovyan && \
 	rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \

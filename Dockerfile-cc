@@ -7,7 +7,14 @@ ENV DEBIAN_FRONTEND noninteractive
 
 #ECEN 4553 Compilter Construction
 # Install PLY(Python Lex-Yacc)
-RUN cd /tmp && git clone https://github.com/dabeaz/ply.git && cd ply && python install.py && \
+#
+# PLY made changes including removing the install script.
+# This specific commit shoudl work - same code, just includes install
+#
+RUN cd /tmp && git clone https://github.com/dabeaz/ply.git \
+     && cd ply \
+     && git checkout 1413aa2cdb99a2b0a39f74769c4c11110d2f9a76 \
+     && python install.py && \
      rm -rf /tmp/ply
 
 # Install pytest
@@ -15,7 +22,7 @@ RUN pip install pytest
 
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
-        ir julia-1.6 # xcpp17 
+        ir julia-1.7 # xcpp17 
 
 # Remove drawio
 RUN pip uninstall -y jupyterlab-drawio

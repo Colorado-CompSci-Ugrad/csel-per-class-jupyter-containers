@@ -12,50 +12,66 @@ USER root
 # Spark dependencies
 # Default values can be overridden at build time
 # (ARGS are in lower case to distinguish them from ENV)
-ARG spark_version="3.1.2"
-ARG hadoop_version="3.2"
-ARG spark_checksum="2385CB772F21B014CE2ABD6B8F5E815721580D6E8BC42A26D70BBCDDA8D303D886A6F12B36D40F6971B5547B70FAE62B5A96146F0421CB93D4E51491308EF5D5"
-ARG openjdk_version="11"
+ARG spark_version="3.3.0"
+ARG hadoop_version="3"
+ARG scala_version="2.13"
+ARG spark_checksum="1e8234d0c1d2ab4462d6b0dfe5b54f2851dcd883378e0ed756140e10adfb5be4123961b521140f580e364c239872ea5a9f813a20b73c69cb6d4e95da2575c29c"
+ARG spark_checksum="4c09dac70e22bf1d5b7b2cabc1dd92aba13237f52a5b682c67982266fc7a0f5e0f964edff9bc76adbd8cb444eb1a00fdc59516147f99e4e2ce068420ff4881f0"
+ARG openjdk_version="17"
 
 ENV APACHE_SPARK_VERSION="${spark_version}" \
     HADOOP_VERSION="${hadoop_version}"
 
 RUN apt-get -y update && \
-    apt-get install --no-install-recommends -y openjdk-8-jdk-headless ca-certificates-java && \
-    update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java && \
+    apt-get install --no-install-recommends -y openjdk-17-jdk-headless ca-certificates-java && \
+#    update-alternatives --config java && \
+    update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java && \
     rm -rf /var/lib/apt/lists/*
 
 # Using the preferred mirror to download Spark
 WORKDIR /tmp
 
-# hadolint ignore=SC2046
-RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz\?as_json | \
-    python -c "import sys, json; content=json.load(sys.stdin); print(content['preferred']+content['path_info'])") && \
-    echo "${spark_checksum} *spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" | sha512sum -c - && \
-    tar xzf "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" -C /usr/local --owner root --group root --no-same-owner && \
-    rm "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"
-
+RUN if [ -z "${scala_version}" ]; then \
+    wget -qO "spark.tgz" "https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz"; \
+  else \
+    wget -qO "spark.tgz" "https://archive.apache.org/dist/spark/spark-${APACHE_SPARK_VERSION}/spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}.tgz"; \
+  fi && \
+  echo "${spark_checksum} *spark.tgz" | sha512sum -c - && \
+  tar xzf "spark.tgz" -C /usr/local --owner root --group root --no-same-owner && \
+  rm "spark.tgz"
+  
 WORKDIR /usr/local
 RUN ln -s "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}" spark
 
 # Configure Spark
 ENV SPARK_HOME=/usr/local/spark
-ENV PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.9-src.zip \
-    SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info" \
-    PATH=$PATH:$SPARK_HOME/bin
+ENV SPARK_OPTS="--driver-java-options=-Xms1024M --driver-java-options=-Xmx4096M --driver-java-options=-Dlog4j.logLevel=info" \
+    PATH="${PATH}:${SPARK_HOME}/bin"
 
-# Fix Spark installation for Java 11 and Apache Arrow library
-# see: https://github.com/apache/spark/pull/27356, https://spark.apache.org/docs/latest/#downloading
-RUN cp -p "${SPARK_HOME}/conf/spark-defaults.conf.template" "${SPARK_HOME}/conf/spark-defaults.conf" && \
-    echo 'spark.driver.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf" && \
-    echo 'spark.executor.extraJavaOptions -Dio.netty.tryReflectionSetAccessible=true' >> "${SPARK_HOME}/conf/spark-defaults.conf"
+RUN rm -f "${SPARK_HOME}" ; \
+  if [ -z "${scala_version}" ]; then \
+    ln -s "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}" "${SPARK_HOME}"; \
+  else \
+    ln -s "spark-${APACHE_SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}-scala${scala_version}" "${SPARK_HOME}"; \
+  fi && \
+  # Add a link in the before_notebook hook in order to source automatically PYTHONPATH && \
+  mkdir -p /usr/local/bin/before-notebook.d && \
+  ln -s "${SPARK_HOME}/sbin/spark-config.sh" /usr/local/bin/before-notebook.d/spark-config.sh
+
+# Configure IPython system-wide
+COPY Dockerfile-dc-ipython-kernel-config.py "/etc/ipython/ipython_kernel_config.py"
+RUN fix-permissions "/etc/ipython/"
+
+USER ${NB_UID}
 
 # Install pyarrow
 RUN mamba install --quiet --yes \
-    'pyarrow=4.0.*' && \
+    'pyarrow' && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
+
+WORKDIR "${HOME}"
 
 ##
 ## Now the all-spark-notebook
@@ -77,11 +93,11 @@ RUN apt-get update && \
 
 # R packages including IRKernel which gets installed globally.
 RUN mamba install --quiet --yes \
-    'r-base=4.1.0' \
-    'r-ggplot2=3.3*' \
-    'r-irkernel=1.2*' \
-    'r-rcurl=1.98*' \
-    'r-sparklyr=1.7*' && \
+    'r-base' \
+    'r-ggplot2' \
+    'r-irkernel' \
+    'r-rcurl' \
+    'r-sparklyr' && \
     mamba clean --all -f -y && \
     fix-permissions "${CONDA_DIR}" && \
     fix-permissions "/home/${NB_USER}"
@@ -98,8 +114,8 @@ RUN mamba install --quiet --yes 'spylon-kernel=0.4*' && \
 ## Install hadoop
 ##
 
-ENV APACHE_HADOOP_VERSION=3.2.2
-ARG hadoop_checksum="054753301927d31a69b80be3e754fd330312f0b1047bcfa4ab978cdce18319ed912983e6022744d8f0c8765b98c87256eb1c3017979db1341d583d2cee22d029"
+ENV APACHE_HADOOP_VERSION=3.3.4
+ARG hadoop_checksum="ca5e12625679ca95b8fd7bb7babc2a8dcb2605979b901df9ad137178718821097b67555115fafc6dbf6bb32b61864ccb6786dbc555e589694a22bf69147780b4"
 
 RUN wget -q $(wget -qO- https://www.apache.org/dyn/closer.lua/hadoop/core/hadoop-${APACHE_HADOOP_VERSION}/hadoop-${APACHE_HADOOP_VERSION}.tar.gz\?as_json | \
     python -c "import sys, json; content=json.load(sys.stdin); print(content['preferred']+content['path_info'])")
@@ -126,11 +142,11 @@ ENV	 HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop \
 	 HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native \
 	 HADOOP_OPTS="$HADOOP_OPTS -Djava.library.path=$HADOOP_HOME/lib/native" \
 	 PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin \
-	 JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 \
+	 JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 \
 	 PATH=$PATH:$HADOOP_HOME/bin
 
 RUN	 hdfs namenode -format && \
-	 fix-permissions "/usr/local/hadoop-3.2.2"
+	 fix-permissions "/usr/local/hadoop-${APACHE_HADOOP_VERSION}"
 
 ##
 ## Install Google cloud utilities -- see https://cloud.google.com/sdk/docs/quickstart
@@ -148,7 +164,8 @@ RUN	pip install grpcio grpcio-tools && \
 ##
 ## sql magic
 ##
-RUN	mamba install -c conda-forge  \
+USER	root
+RUN	mamba install -y -c conda-forge  \
 	conda-forge::psycopg2 conda-forge::mysqlclient conda-forge::ipython-sql && \
 	mamba clean -afy 
 

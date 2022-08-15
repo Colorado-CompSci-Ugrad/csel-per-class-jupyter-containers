@@ -43,6 +43,6 @@ ADD webots-server /opt/install/webots-server
 RUN fix-permissions /opt/install
 
 RUN cd /opt/install/webots-server \
-    &&  conda env update -n base --file environment.yml
+    &&  mamba env update -n base --file environment.yml
 
 USER $NB_USER
