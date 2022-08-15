@@ -35,6 +35,9 @@ RUN apt-get -y update && \
 RUN curl -Lo /usr/local/bin/coursier https://github.com/coursier/coursier/releases/download/v2.0.0-RC3-2/coursier && \
     chmod +x /usr/local/bin/coursier
 
+# Install a metal plugin(vscode)
+ADD metals-vscode /opt/install/metals-vscode
+
 USER $NB_UID
 
 # ensure the JAR of the CLI is in the coursier cache, in the image
