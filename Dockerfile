@@ -66,7 +66,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml openpyxl
 
 
 RUN	cd /opt && \
-	wget https://github.com/coder/code-server/releases/download/v4.5.1/code-server_4.5.1_amd64.deb && \
+	wget https://github.com/coder/code-server/releases/download/v4.5.2/code-server_4.5.2_amd64.deb && \
 	dpkg -i ./code-server*.deb && \
 	rm -f ./code-server*.deb
 
