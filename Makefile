@@ -7,22 +7,24 @@ ifndef DOCKER_REPO
 DOCKER_REPO=csr.csel.io/jhub
 endif
 
-export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.2"
-export NOTEBOOK_2270_BASE = "jupyter/base-notebook:notebook-6.4.2"
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.12"
+export NOTEBOOK_2270_BASE = "jupyter/base-notebook:notebook-6.4.12"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.4.2.5
+export BASE_VERSION_NUMBER=v6.4.12.2
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
-export 2270_VERSION_NUMBER=v6.4.2.5.3
+export 2270_VERSION_NUMBER=v6.4.12.2
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.4.2.5
-export NOTEBOOK_COMMON_BASE_AI=v6.4.2.5
-export NOTEBOOK_COMMON_BASE_PL=v6.4.2.5
+export NOTEBOOK_COMMON_BASE=v6.4.12.2
+export NOTEBOOK_COMMON_BASE_AI=v6.4.12.2
+export NOTEBOOK_COMMON_BASE_PL=v6.4.12.2
+
+export WEBOTS_VERSION_NUMBER=v6.4.12.2
 
 export NOTEBOOK_2270_IMAGE = $(DOCKER_REPO)/notebook-2270$(DEV_LABEL)
 export NOTEBOOK_2270_VERSION = $(NOTEBOOK_2270_IMAGE):$(2270_VERSION_NUMBER)
@@ -83,7 +85,11 @@ export NOTEBOOK_CC_IMAGE = $(DOCKER_REPO)/notebook-cc$(DEV_LABEL)
 export NOTEBOOK_CC_VERSION = $(NOTEBOOK_CC_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_CC_LATEST = $(NOTEBOOK_CC_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc
+export NOTEBOOK_WEBOTS_IMAGE = $(DOCKER_REPO)/notebook-webots$(DEV_LABEL)
+export NOTEBOOK_WEBOTS_VERSION = $(NOTEBOOK_WEBOTS_IMAGE):$(WEBOTS_VERSION_NUMBER)
+export NOTEBOOK_WEBOTS_LATEST = $(NOTEBOOK_WEBOTS_IMAGE):latest
+
+build: build-notebook build-2270 build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -103,7 +109,7 @@ build-2270:
 	docker tag $(NOTEBOOK_2270_IMAGE) $(NOTEBOOK_2270_LATEST)
 
 build-pl:
-	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_AI)" \
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)" \
 		--build-arg ALMOND_VERSION=$(ALMOND_VERSION) \
 		--build-arg SCALA_VERSIONS=$(SCALA_VERSIONS) \
 		$(DOCKER_ARGS) -t $(NOTEBOOK_PL_VERSION) -t $(NOTEBOOK_PL_LATEST) -f Dockerfile-pl .
@@ -182,6 +188,13 @@ build-cc:
 	docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_VERSION)
 	docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_LATEST)
 
+build-webots:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+		$(DOCKER_ARGS) -t $(NOTEBOOK_WEBOTS_VERSION) -t $(NOTEBOOK_WEBOTS_LATEST) -f Dockerfile-webots .
+	docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_VERSION)
+	docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
+
+
 
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
@@ -212,9 +225,11 @@ tag:
 	-docker tag $(NOTEBOOK_NS_IMAGE) $(NOTEBOOK_NS_LATEST)
 	-docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_VERSION)
 	-docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_LATEST)
+	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_VERSION)
+	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
 
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc
+push: push-notebook push-2270 push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -275,3 +290,7 @@ push-ns: build-ns
 push-cc: build-cc
 	-docker push $(NOTEBOOK_CC_VERSION)
 	-docker push $(NOTEBOOK_CC_LATEST)
+
+push-webots: build-webots
+	-docker push $(NOTEBOOK_WEBOTS_VERSION)
+	-docker push $(NOTEBOOK_WEBOTS_LATEST)

@@ -1,0 +1,48 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+     && apt install ca-certificates \
+     && wget -qO- https://cyberbotics.com/Cyberbotics.asc | sudo apt-key add - \
+     && apt-add-repository 'deb https://cyberbotics.com/debian/ binary-amd64/' \
+     && apt-get update \
+     && apt-get install -yq dbus-x11 swig xorg \
+       '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev \
+           libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev \
+        dbus-x11 xfce4 xfce4-panel xfce4-session xfce4-settings xorg xubuntu-icon-theme \
+	libopencv-dev libeigen3-dev
+
+# Remove light-locker to prevent screen lock
+RUN wget 'https://sourceforge.net/projects/turbovnc/files/2.2.5/turbovnc_2.2.5_amd64.deb/download' -O turbovnc_2.2.5_amd64.deb && \
+   apt-get install -y -q ./turbovnc_2.2.5_amd64.deb && \
+   apt-get remove -y -q light-locker && \
+   rm ./turbovnc_2.2.5_amd64.deb && \
+   ln -s /opt/TurboVNC/bin/* /usr/local/bin/
+
+RUN   cd /opt \
+      && wget --no-check-certificate https://github.com/cyberbotics/webots/releases/download/R2021b/webots-R2021b-x86-64.tar.bz2 \
+      && tar xjf webots-*.tar.bz2 \
+      && rm webots-*.tar.bz2
+
+ENV   AUDIODEV=null
+ENV   LIBGL_ALWAYS_SOFTWARE=true
+
+ENV   WEBOTS_HOME=/opt/webots
+ENV   LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${WEBOTS_HOME}/lib:${WEBOTS_HOME}/lib/controller
+ENV   PYTHONPATH=${PYTHONPATH}:${WEBOTS_HOME}/lib/python39:${WEBOTS_HOME}/lib/controller/python39
+ENV   PYTHONIOENCODING=UTF-8
+
+# apt-get may result in root-owned directories/files under $HOME
+RUN chown -R $NB_UID:$NB_GID $HOME
+
+ADD webots-server /opt/install/webots-server
+RUN fix-permissions /opt/install
+
+RUN cd /opt/install/webots-server \
+    &&  mamba env update -n base --file environment.yml
+
+USER $NB_USER

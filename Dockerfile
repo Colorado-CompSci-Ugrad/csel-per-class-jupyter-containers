@@ -42,7 +42,7 @@ RUN     conda install -c conda-forge --freeze-installed \
 	      bokeh datashader holoviews \
               jupyter-server-proxy cppcheck && \
 	jupyter labextension install --no-build @jupyterlab/server-proxy && \
-        conda clean -afy
+        mamba clean -afy
 
 #
 # openpyxl is for pandas.read_excel
@@ -66,7 +66,7 @@ RUN	pip install networkx pygraphviz pydot pyyaml openpyxl
 
 
 RUN	cd /opt && \
-	wget https://github.com/cdr/code-server/releases/download/v3.11.1/code-server_3.11.1_amd64.deb && \
+	wget https://github.com/coder/code-server/releases/download/v4.5.2/code-server_4.5.2_amd64.deb && \
 	dpkg -i ./code-server*.deb && \
 	rm -f ./code-server*.deb
 
@@ -93,7 +93,7 @@ RUN	$CONDA_DIR/bin/pip  install --index-url https://test.pypi.org/simple/ \
 ##
 ## jupyter-archive
 ##
-RUN conda install -c conda-forge nodejs jupyter-archive
+RUN mamba install -c conda-forge nodejs jupyter-archive
 
 ##
 ## Build jupyter lab extensions

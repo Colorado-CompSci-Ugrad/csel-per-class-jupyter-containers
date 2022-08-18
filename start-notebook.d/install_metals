@@ -1,0 +1,16 @@
+#!/bin/bash -x
+
+WANT="1.19.0"
+METAL_FILE="/opt/install/metals-vscode/scalameta.metals-${WANT}.vsix"
+
+if [ -f ${METAL_FILE} ];then
+    #code-server --list-extensions --show-versions | grep "ms-vscode.cpptools@$WANT"
+    code-server --list-extensions | grep "scalameta.metals"
+    if [ $? -eq 0 ]; then
+        echo "already installed"
+        exit 0
+    fi
+    echo "Install metals $WANT"
+    code-server --install-extension ${METAL_FILE}
+fi
+exit 0
