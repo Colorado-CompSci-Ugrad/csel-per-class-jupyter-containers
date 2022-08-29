@@ -82,7 +82,11 @@ export NOTEBOOK_WEBOTS_IMAGE = $(DOCKER_REPO)/notebook-webots$(DEV_LABEL)
 export NOTEBOOK_WEBOTS_VERSION = $(NOTEBOOK_WEBOTS_IMAGE):$(WEBOTS_VERSION_NUMBER)
 export NOTEBOOK_WEBOTS_LATEST = $(NOTEBOOK_WEBOTS_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc
+export NOTEBOOK_APPLIEDML_IMAGE = $(DOCKER_REPO)/notebook-appliedml$(DEV_LABEL)
+export NOTEBOOK_APPLIEDML_VERSION = $(NOTEBOOK_APPLIEDML_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_APPLIEDML_LATEST = $(NOTEBOOK_APPLIEDML_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -178,7 +182,11 @@ build-webots:
 	docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_VERSION)
 	docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
 
-
+build-appliedml:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+        	$(DOCKER_ARGS) -t $(NOTEBOOK_APPLIEDML_VERSION) -t $(NOTEBOOK_APPLIEDML_LATEST) -f Dockerfile-appliedml .
+	docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
+	docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
 
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
@@ -211,9 +219,10 @@ tag:
 	-docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_LATEST)
 	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_VERSION)
 	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
+        -docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
+        -docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
 
-
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -274,3 +283,7 @@ push-cc: build-cc
 push-webots: build-webots
 	-docker push $(NOTEBOOK_WEBOTS_VERSION)
 	-docker push $(NOTEBOOK_WEBOTS_LATEST)
+
+push-appliedml: build-appliedml
+	-docker push $(NOTEBOOK_APPLIEDML_VERSION)
+	-docker push $(NOTEBOOK_APPLIEDML_LATEST)
