@@ -12,6 +12,9 @@ RUN     DEBIAN_FRONTEND=noninteractive apt-get update && \
                                        git clone https://github.com/rasbt/python-machine-learning-book-3rd-edition /opt/python-machine-learning-book-3rd-edition && \
                                        chown $NB_UID:$NB_GID /opt/python-machine-learning-book-3rd-edition
 
+# Instal nltk
+RUN pip3 install nltk
+
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \
         chown $NB_UID:$NB_GID /home/jovyan
