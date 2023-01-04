@@ -12,7 +12,7 @@ RUN apt-get update \
 
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
-        ir julia-1.7 # xcpp17 
+        ir julia-1.8 # xcpp17 
 
 # Remove drawio
 RUN pip uninstall -y jupyterlab-drawio

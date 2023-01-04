@@ -17,7 +17,7 @@ RUN	$CONDA_DIR/bin/mamba install --quiet --yes scikit-learn bqplot
 ##
 RUN	cd /opt && \
  	git clone --branch Update_to_lab_v3 https://github.com/AISpace2/AISpace2.git && \
- 	cd AISpace2 && \
+ 	cd AISpace2 && export NODE_OPTIONS=--openssl-legacy-provider && \
  	(cd js ; npm install) && \
  	pip install -r requirements-dev.txt && \
  	pip install -e . && \	

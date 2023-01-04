@@ -7,22 +7,23 @@ ifndef DOCKER_REPO
 DOCKER_REPO=csr.csel.io/jhub
 endif
 
-export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.12"
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.5.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.4.12.2
+export BASE_VERSION_NUMBER=v6.5.2.0
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.4.12.2
-export NOTEBOOK_COMMON_BASE_AI=v6.4.12.2
-export NOTEBOOK_COMMON_BASE_PL=v6.4.12.2
+export NOTEBOOK_COMMON_BASE=v6.5.2.0
+export NOTEBOOK_COMMON_BASE_AI=v6.5.2.0
+export NOTEBOOK_COMMON_BASE_PL=v6.5.2.0
 
-export WEBOTS_VERSION_NUMBER=v6.4.12.2
-export INTROC_VERSION_NUMBER=v6.4.12.3
+export WEBOTS_VERSION_NUMBER=v6.5.2.0
+export INTROC_VERSION_NUMBER=v6.5.2.0
+export APPLIEDML_VERSION_NUMBER=v6.5.2.0
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
@@ -84,7 +85,7 @@ export NOTEBOOK_WEBOTS_VERSION = $(NOTEBOOK_WEBOTS_IMAGE):$(WEBOTS_VERSION_NUMBE
 export NOTEBOOK_WEBOTS_LATEST = $(NOTEBOOK_WEBOTS_IMAGE):latest
 
 export NOTEBOOK_APPLIEDML_IMAGE = $(DOCKER_REPO)/notebook-appliedml$(DEV_LABEL)
-export NOTEBOOK_APPLIEDML_VERSION = $(NOTEBOOK_APPLIEDML_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_APPLIEDML_VERSION = $(NOTEBOOK_APPLIEDML_IMAGE):$(APPLIEDML_VERSION_NUMBER)
 export NOTEBOOK_APPLIEDML_LATEST = $(NOTEBOOK_APPLIEDML_IMAGE):latest
 
 build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml
@@ -220,8 +221,8 @@ tag:
 	-docker tag $(NOTEBOOK_CC_IMAGE) $(NOTEBOOK_CC_LATEST)
 	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_VERSION)
 	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
-        -docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
-        -docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
+	-docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
+	-docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
 
 push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml
 
