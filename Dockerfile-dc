@@ -62,7 +62,7 @@ RUN rm -f "${SPARK_HOME}" ; \
 COPY Dockerfile-dc-ipython-kernel-config.py "/etc/ipython/ipython_kernel_config.py"
 RUN fix-permissions "/etc/ipython/"
 
-USER ${NB_UID}
+#USER ${NB_UID}
 
 # Install pyarrow
 RUN mamba install --quiet --yes \

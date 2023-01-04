@@ -7,23 +7,23 @@ ifndef DOCKER_REPO
 DOCKER_REPO=csr.csel.io/jhub
 endif
 
-export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.4.12"
+export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.5.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.4.12.2
+export BASE_VERSION_NUMBER=v6.5.2.0
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.4.12.2
-export NOTEBOOK_COMMON_BASE_AI=v6.4.12.2
-export NOTEBOOK_COMMON_BASE_PL=v6.4.12.2
+export NOTEBOOK_COMMON_BASE=v6.5.2.0
+export NOTEBOOK_COMMON_BASE_AI=v6.5.2.0
+export NOTEBOOK_COMMON_BASE_PL=v6.5.2.0
 
-export WEBOTS_VERSION_NUMBER=v6.4.12.2
-export INTROC_VERSION_NUMBER=v6.4.12.3
-export APPLIEDML_VERSION_NUMBER=v6.4.12.3
+export WEBOTS_VERSION_NUMBER=v6.5.2.0
+export INTROC_VERSION_NUMBER=v6.5.2.0
+export APPLIEDML_VERSION_NUMBER=v6.5.2.0
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
