@@ -5,10 +5,11 @@ LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
 USER root
 ENV DEBIAN_FRONTEND noninteractive
 
-# Install bc
+# GREQ0380353 Install shared packages ECEN 1310 / ECEN 4313
 RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
-    				   bc && apt-get clean
+ && DEBIAN_FRONTEND=noninteractive \
+ && apt-get install -yq bc libjemalloc2 libjemalloc-dev --no-install-recommends \
+ && apt-get clean
 
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \
