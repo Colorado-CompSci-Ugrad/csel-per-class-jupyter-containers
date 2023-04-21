@@ -44,6 +44,12 @@ RUN     conda install -c conda-forge --freeze-installed \
 	jupyter labextension install --no-build @jupyterlab/server-proxy && \
         mamba clean -afy
 
+# FIX: Change the default websocket max size of jupserver server proxy
+ENV JSP_VERSION=v3.2.2
+ADD jsp_websocket.patch /tmp
+RUN git -c advice.detachedHead=false clone --single-branch --depth=1 --recursive -b ${JSP_VERSION} \
+	https://github.com/jupyterhub/jupyter-server-proxy.git /tmp/jupyter-server-proxy && patch -d /tmp/jupyter-server-proxy -p1 < /tmp/jsp_websocket.patch
+RUN pip install --upgrade --no-deps --force-reinstall /tmp/jupyter-server-proxy && rm -rf /tmp/jupyter-server-proxy /tmp/jsp_websocket.patch
 #
 # openpyxl is for pandas.read_excel
 #
