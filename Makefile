@@ -10,20 +10,21 @@ endif
 export NOTEBOOK_BASE = "jupyter/datascience-notebook:notebook-6.5.2"
 
 export NOTEBOOK_IMAGE = $(DOCKER_REPO)/notebook$(DEV_LABEL)
-export BASE_VERSION_NUMBER=v6.5.2.0
+export BASE_VERSION_NUMBER=v6.5.2.2
 export NOTEBOOK_VERSION = $(NOTEBOOK_IMAGE):$(BASE_VERSION_NUMBER)
 export NOTEBOOK_LATEST = $(NOTEBOOK_IMAGE):latest
 
 #
 # The base version from which most other images are built
 #
-export NOTEBOOK_COMMON_BASE=v6.5.2.0
-export NOTEBOOK_COMMON_BASE_AI=v6.5.2.0
-export NOTEBOOK_COMMON_BASE_PL=v6.5.2.0
+export NOTEBOOK_COMMON_BASE=v6.5.2.2
+export NOTEBOOK_COMMON_BASE_AI=v6.5.2.2
+export NOTEBOOK_COMMON_BASE_PL=v6.5.2.2
 
-export WEBOTS_VERSION_NUMBER=v6.5.2.0
-export INTROC_VERSION_NUMBER=v6.5.2.0
-export APPLIEDML_VERSION_NUMBER=v6.5.2.0
+export WEBOTS_VERSION_NUMBER=v6.5.2.2
+export INTROC_VERSION_NUMBER=v6.5.2.2
+export APPLIEDML_VERSION_NUMBER=v6.5.2.2
+export DSA_VERSION_NUMBER=v6.5.2.2.3
 
 export NOTEBOOK_PL_IMAGE = $(DOCKER_REPO)/notebook-pl$(DEV_LABEL)
 export NOTEBOOK_PL_VERSION = $(NOTEBOOK_PL_IMAGE):$(NOTEBOOK_COMMON_BASE_PL)
@@ -88,7 +89,11 @@ export NOTEBOOK_APPLIEDML_IMAGE = $(DOCKER_REPO)/notebook-appliedml$(DEV_LABEL)
 export NOTEBOOK_APPLIEDML_VERSION = $(NOTEBOOK_APPLIEDML_IMAGE):$(APPLIEDML_VERSION_NUMBER)
 export NOTEBOOK_APPLIEDML_LATEST = $(NOTEBOOK_APPLIEDML_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml
+export NOTEBOOK_DSA_IMAGE = $(DOCKER_REPO)/notebook-dsa$(DEV_LABEL)
+export NOTEBOOK_DSA_VERSION = $(NOTEBOOK_DSA_IMAGE):$(DSA_VERSION_NUMBER)
+export NOTEBOOK_DSA_LATEST = $(NOTEBOOK_DSA_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml build-dsa
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -190,6 +195,12 @@ build-appliedml:
 	docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
 	docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
 
+build-dsa:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+        	$(DOCKER_ARGS) -t $(NOTEBOOK_DSA_VERSION) -t $(NOTEBOOK_DSA_LATEST) -f Dockerfile-dsa .
+	docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_VERSION)
+	docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_LATEST)
+
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
@@ -223,8 +234,10 @@ tag:
 	-docker tag $(NOTEBOOK_WEBOTS_IMAGE) $(NOTEBOOK_WEBOTS_LATEST)
 	-docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_VERSION)
 	-docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
+	-docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_VERSION)
+	-docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_LATEST)
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml push-dsa
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -289,3 +302,7 @@ push-webots: build-webots
 push-appliedml: build-appliedml
 	-docker push $(NOTEBOOK_APPLIEDML_VERSION)
 	-docker push $(NOTEBOOK_APPLIEDML_LATEST)
+
+push-dsa: build-dsa
+	-docker push $(NOTEBOOK_DSA_VERSION)
+	-docker push $(NOTEBOOK_DSA_LATEST)

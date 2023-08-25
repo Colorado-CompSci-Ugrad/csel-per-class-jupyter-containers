@@ -17,6 +17,11 @@ RUN cd /tmp && git clone https://github.com/dabeaz/ply.git \
      && python install.py && \
      rm -rf /tmp/ply
 
+# Install lld,llvm
+RUN apt-get update \
+ && apt-get install -yq  lld llvm --no-install-recommends \
+ && apt-get clean
+
 # Install pytest
 RUN pip install pytest
 
