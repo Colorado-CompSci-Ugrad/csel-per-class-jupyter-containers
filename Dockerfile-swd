@@ -1,0 +1,35 @@
+ARG BASE_CONTAINER=define_as_build_arg
+FROM $BASE_CONTAINER
+LABEL MAINTAINER="CSEL Ops <admin@cs.colorado.edu>"
+
+USER root
+
+RUN  DEBIAN_FRONTEND=noninteractive apt-get update && \
+     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+				    postgresql-client
+
+##
+## Geopython, XML
+##
+RUN	mamba install -c conda-forge  \
+	conda-forge::gdal conda-forge:libgdal \
+	conda-forge::lxml conda-forge:libiconv conda-forge::geopandas conda-forge::geoplot \
+	conda-forge::folium conda-forge::pysal conda-forge::esda conda-forge::rasterio conda-forge::poppler \
+	conda-forge::psycopg2 conda-forge::mysqlclient conda-forge::ipython-sql && \
+	mamba clean -afy && \
+	DEBIAN_FRONTEND=noninteractive apt-get update && \	
+	DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+				       	        xqilla libxqilla-dev && \
+	rm -rf /var/lib/apt/lists/* && \
+	$CONDA_DIR/bin/pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
+# Instal valgrind
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+     valgrind  && \
+     apt-get clean	
+
+RUN     rm -rf /home/jovyan  && \
+        mkdir /home/jovyan && \
+        chown $NB_UID:$NB_GID /home/jovyan
+
+USER    $NB_UID

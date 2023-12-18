@@ -94,7 +94,11 @@ export NOTEBOOK_DSA_IMAGE = $(DOCKER_REPO)/notebook-dsa$(DEV_LABEL)
 export NOTEBOOK_DSA_VERSION = $(NOTEBOOK_DSA_IMAGE):$(DSA_VERSION_NUMBER)
 export NOTEBOOK_DSA_LATEST = $(NOTEBOOK_DSA_IMAGE):latest
 
-build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml build-dsa
+export NOTEBOOK_SWD_IMAGE = $(DOCKER_REPO)/notebook-swd$(DEV_LABEL)
+export NOTEBOOK_SWD_VERSION = $(NOTEBOOK_SWD_IMAGE):$(BASE_VERSION_NUMBER)
+export NOTEBOOK_SWD_LATEST = $(NOTEBOOK_SWD_IMAGE):latest
+
+build: build-notebook build-pl build-db build-mpi build-ai build-chaos build-dc build-pac build-qt build-qcs build-introc build-corg build-ns build-cc build-appliedml build-dsa build-swd
 
 DOCKER_ARGS=--build-arg DEV_LABEL=$(DEV_LABEL)
 
@@ -202,6 +206,12 @@ build-dsa:
 	docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_VERSION)
 	docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_LATEST)
 
+build-swd:
+	docker build --build-arg BASE_CONTAINER="$(NOTEBOOK_IMAGE):$(NOTEBOOK_COMMON_BASE)" \
+        	$(DOCKER_ARGS) -t $(NOTEBOOK_SWD_VERSION) -t $(NOTEBOOK_SWD_LATEST) -f Dockerfile-swd .
+	docker tag $(NOTEBOOK_SWD_IMAGE) $(NOTEBOOK_SWD_VERSION)
+	docker tag $(NOTEBOOK_SWD_IMAGE) $(NOTEBOOK_SWD_LATEST)
+
 tag:
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_VERSION)
 	-docker tag $(NOTEBOOK_IMAGE) $(NOTEBOOK_LATEST)
@@ -237,8 +247,10 @@ tag:
 	-docker tag $(NOTEBOOK_APPLIEDML_IMAGE) $(NOTEBOOK_APPLIEDML_LATEST)
 	-docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_VERSION)
 	-docker tag $(NOTEBOOK_DSA_IMAGE) $(NOTEBOOK_DSA_LATEST)
+	-docker tag $(NOTEBOOK_SWD_IMAGE) $(NOTEBOOK_SWD_VERSION)
+	-docker tag $(NOTEBOOK_SWD_IMAGE) $(NOTEBOOK_SWD_LATEST)
 
-push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml push-dsa
+push: push-notebook push-pl push-db push-mpi push-ai push-chaos push-dc push-pac push-qt push-qcs push-introc push-corg push-ns push-cc push-webots push-appliedml push-dsa push-swd
 
 push-notebook: build-notebook
 	-docker push $(NOTEBOOK_VERSION)
@@ -307,3 +319,7 @@ push-appliedml: build-appliedml
 push-dsa: build-dsa
 	-docker push $(NOTEBOOK_DSA_VERSION)
 	-docker push $(NOTEBOOK_DSA_LATEST)
+
+push-swd: build-swd
+	-docker push $(NOTEBOOK_SWD_VERSION)
+	-docker push $(NOTEBOOK_SWD_LATEST)
