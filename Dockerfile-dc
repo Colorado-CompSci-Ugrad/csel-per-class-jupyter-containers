@@ -161,6 +161,8 @@ RUN	pip install grpcio grpcio-tools && \
 
 #RUN	apt-get -y install rabbitmq-server
 
+RUN	apt-get -y install sqlite3 
+
 ##
 ## sql magic
 ##
