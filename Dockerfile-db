@@ -23,6 +23,14 @@ RUN	mamba install -c conda-forge  \
 	rm -rf /var/lib/apt/lists/* && \
 	$CONDA_DIR/bin/pip install contextily libpysal mgwr mapclassify esda python-simplexquery pymysql
 
+# Install mongosh
+ADD https://downloads.mongodb.com/compass/mongosh-2.2.12-linux-x64.tgz /tmp
+
+RUN cd /tmp && tar zxf mongosh-2.2.12-linux-x64.tgz && cp /tmp/mongosh-2.2.12-linux-x64/bin/mongosh /usr/local/bin && cp /tmp/mongosh-2.2.12-linux-x64/bin/mongosh_crypt_v1.so /usr/local/lib && rm -rf /tmp/mongosh-2.2.12-linux-x64*
+
+# Install MongoDB database Tools
+ADD https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.9.5.tgz /tmp
+RUN cd /tmp && tar zxf mongodb-database-tools-ubuntu2204-x86_64-100.9.5.tgz && cp mongodb-database-tools-ubuntu2204-x86_64-100.9.5/bin/* /usr/local/bin && rm -rf mongodb-database-tools-ubuntu2204-x86_64-100.9.5*
 
 RUN     rm -rf /home/jovyan  && \
         mkdir /home/jovyan && \

@@ -10,7 +10,7 @@ ENV DEBIAN_FRONTEND noninteractive
 # Dockefile for CSCI 3090 : Quantum Computing
 #               ECEN 4925 : Quantum Hardware
 #
-RUN pip install pytest cvxpy qutip qiskit networkx noisyopt qiskit-ibm-runtime
+RUN pip install pytest cvxpy qutip qiskit networkx noisyopt qiskit-ibm-runtime qiskit-aer
 
 # Install qiskit-textbook for additional qiskit helpers
 RUN pip install git+https://github.com/qiskit-community/qiskit-textbook.git#subdirectory=qiskit-textbook-src
