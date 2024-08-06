@@ -7,7 +7,8 @@ USER root
 ENV DEBIAN_FRONTEND noninteractive
 
 #
-# Dockefile for ECEN 5016 : Fundamentals of Quantum Eng
+# Dockefile for CSCI 3090 : Quantum Computing
+#               ECEN 4925 : Quantum Hardware
 #
 RUN pip install pytest cvxpy qutip qiskit networkx noisyopt qiskit-ibm-runtime qiskit-aer
 
