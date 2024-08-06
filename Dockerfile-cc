@@ -22,8 +22,8 @@ RUN apt-get update \
  && apt-get install -yq  lld llvm --no-install-recommends \
  && apt-get clean
 
-# Install pytest
-RUN pip install pytest
+# Install pytest lark lark-parser graphviz
+RUN pip install pytest lark lark-parser graphviz
 
 # Remove jupyter kernel
 RUN     echo "y" | /opt/conda/bin/jupyter-kernelspec remove -y \

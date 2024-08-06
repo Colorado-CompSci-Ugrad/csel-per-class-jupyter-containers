@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND noninteractive
 #
 # Dockefile for ECEN 5016 : Fundamentals of Quantum Eng
 #
-RUN pip install pytest cvxpy qutip qiskit networkx noisyopt
+RUN pip install pytest cvxpy qutip qiskit networkx noisyopt qiskit-ibm-runtime qiskit-aer
 
 # Install qiskit-textbook for additional qiskit helpers
 RUN pip install git+https://github.com/qiskit-community/qiskit-textbook.git#subdirectory=qiskit-textbook-src
